@@ -10,6 +10,8 @@ przy kolejnych uruchomieniach (chyba że wywołasz `animatrix sync-runtime --for
 
 from __future__ import annotations
 
+import os
+
 from manim import *  # noqa: F403
 
 from motyw import *  # noqa: F403
@@ -371,3 +373,69 @@ def pokoloruj_regiony(
         sub = regiony.get(nazwa)
         if sub is not None:
             sub.set_fill(skala_koloru(wartosc, lo, hi, od=od, do=do), opacity=1.0)
+
+
+# --------------------------------------------------------------------------
+# Kontrola układu
+#
+# Most między Manimem a `animatrix.uklad`. Scena podaje nazwane obiekty, my
+# wyciągamy z nich prostokąty i sprawdzamy kadr, strefę bezpieczną, kolizje
+# i czytelność tekstu. Uchybienia lecą na stderr, więc widać je w logu renderu
+# i w interfejsie — a przy ANIMATRIX_STRICT=1 render się na nich zatrzymuje.
+# --------------------------------------------------------------------------
+def prostokat_z(mobject: Mobject):
+    from animatrix.uklad import Prostokat
+
+    lewo, dol = mobject.get_corner(DOWN + LEFT)[:2]
+    prawo, gora = mobject.get_corner(UP + RIGHT)[:2]
+    return Prostokat(float(lewo), float(dol), float(prawo), float(gora))
+
+
+def kadr_sceny():
+    from animatrix.uklad import Kadr
+
+    from animatrix.formaty import format_wideo
+
+    nazwa = os.environ.get("ANIMATRIX_FORMAT") or ("9:16" if PION else "16:9")
+    try:
+        fmt = format_wideo(nazwa)
+    except Exception:
+        fmt = format_wideo("9:16" if PION else "16:9")
+    return Kadr(
+        szerokosc=KADR_W,
+        wysokosc=KADR_H,
+        px_na_jednostke=PX_NA_JEDNOSTKE,
+        strefa=fmt.strefa_bezpieczna(),
+    )
+
+
+def sprawdz_uklad(elementy: dict, *, moze_nachodzic: tuple = ()) -> list:
+    """Waliduje kompozycję PRZED renderem. `elementy` to {nazwa: mobject}."""
+    import sys as _sys
+
+    from animatrix.uklad import Element, podsumowanie, waliduj
+
+    kadr = kadr_sceny()
+    lista = [
+        Element(
+            id=nazwa,
+            prostokat=prostokat_z(m),
+            tekst=_zawiera_tekst(m),
+            rozmiar_px=float(m.height) * PX_NA_JEDNOSTKE if _zawiera_tekst(m) else None,
+            moze_nachodzic=nazwa in moze_nachodzic,
+        )
+        for nazwa, m in elementy.items()
+        if m is not None
+    ]
+    uchybienia = waliduj(lista, kadr)
+    if uchybienia:
+        print(f"[uklad] {podsumowanie(uchybienia)}", file=_sys.stderr)
+        for u in uchybienia:
+            print(f"[uklad] {u}", file=_sys.stderr)
+        if os.environ.get("ANIMATRIX_STRICT") == "1":
+            twarde = [u for u in uchybienia if u.waga == "blad"]
+            if twarde:
+                raise RuntimeError(
+                    "Układ sceny ma błędy: " + "; ".join(u.opis for u in twarde)
+                )
+    return uchybienia

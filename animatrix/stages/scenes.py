@@ -61,7 +61,7 @@ def _generuj_kod(project: Project, llm: LLM, script: Script, sb: Storyboard, st:
     if seg is None or item is None:
         raise RuntimeError(f"Brak scenariusza albo storyboardu dla segmentu {st.id}.")
 
-    system = prompts.scene_system(st.klasa, script.meta.motyw)
+    system = prompts.scene_system(st.klasa, script.meta.motyw, script.meta.format_wideo)
     user = prompts.scene_user(
         temat=script.meta.temat,
         segment_id=st.id,

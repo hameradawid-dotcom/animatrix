@@ -290,7 +290,8 @@ Wymagania techniczne:
 - Polskie znaki: proza WYŁĄCZNIE przez `Text`/helpery `tytul`, `podtytul`,
   `body`, `etykieta`. Nigdy przez `Tex`. `MathTex` tylko do wzorów bez polskich
   słów.
-- Wszystko musi się zmieścić w kadrze 16:9 (szerokość 14.2, wysokość 8 jednostek).
+- KADR: {KADR}
+  Wszystko musi się w nim zmieścić i nic nie może na siebie nachodzić.
 
 Dostępne helpery z theme.py:
 {HELPERY}
@@ -335,6 +336,11 @@ Wymagania techniczne (bezwzględne):
   "assets/poland.svg"). Jeśli asset może nie istnieć, otocz wczytanie
   `if Path(...).exists()` z sensownym fallbackiem — scena nie może się wywalić.
 - Zero dostępu do sieci, zero `os.system`, zero instalowania pakietów.
+- KADR: {KADR}
+  Wszystko musi się w nim zmieścić i nic nie może na siebie nachodzić.
+- Na końcu `construct`, PRZED blokiem `with self.voiceover(...)`, wywołaj
+  `sprawdz_uklad({...})` z nazwanymi obiektami najwyższego poziomu — walidator
+  sprawdzi kadr, strefę bezpieczną i kolizje, zanim render ruszy.
 - Kod ma być czytelny, bez komentarzy opisujących oczywistości.
 
 Dostępne helpery z theme.py:
@@ -502,23 +508,33 @@ Stałe motywu:
 """
 
 
-def storyboard_system(motyw: str) -> str:
-    return STORYBOARD_SYSTEM.replace("{ZASADY}", zasady_wizualne(motyw))
+def storyboard_system(motyw: str, format_wideo: str = "16:9") -> str:
+    from animatrix.formaty import opis_kadru
+
+    return STORYBOARD_SYSTEM.replace("{ZASADY}", zasady_wizualne(motyw)).replace(
+        "{KADR}", opis_kadru(format_wideo)
+    )
 
 
-def preview_system(klasa: str, motyw: str) -> str:
+def preview_system(klasa: str, motyw: str, format_wideo: str = "16:9") -> str:
+    from animatrix.formaty import opis_kadru
+
     return (
         PREVIEW_SYSTEM.replace("{KLASA}", klasa)
         .replace("{HELPERY}", HELPERY_THEME)
         .replace("{ZASADY}", zasady_wizualne(motyw))
+        .replace("{KADR}", opis_kadru(format_wideo))
     )
 
 
-def scene_system(klasa: str, motyw: str) -> str:
+def scene_system(klasa: str, motyw: str, format_wideo: str = "16:9") -> str:
+    from animatrix.formaty import opis_kadru
+
     return (
         SCENE_SYSTEM.replace("{KLASA}", klasa)
         .replace("{HELPERY}", HELPERY_THEME)
         .replace("{ZASADY}", zasady_wizualne(motyw))
+        .replace("{KADR}", opis_kadru(format_wideo))
     )
 
 

@@ -298,6 +298,57 @@ def render_final(
 
 
 @app.command()
+def sprawdz(
+    nazwa: str = NAZWA,
+    segment: Optional[str] = typer.Option(None, "--segment"),
+    format_wideo: Optional[str] = typer.Option(
+        None, "--format", help="Sprawdź w innym kadrze niż zapisany w projekcie."
+    ),
+) -> None:
+    """Mierzy układ scen BEZ renderowania i zgłasza kolizje oraz wyjścia poza kadr."""
+    from animatrix.sonda import zmierz_projekt
+    from animatrix.uklad import bledy as tylko_bledy
+
+    proj = _otworz(nazwa)
+    fmt = format_wideo or proj.load_script().meta.format_wideo
+    ui.naglowek(f"Kontrola układu — kadr {fmt}")
+
+    with ui.console.status("mierzę sceny…"):
+        wyniki = _obsluz(zmierz_projekt, proj, format=fmt)
+
+    if segment:
+        wyniki = [w for w in wyniki if w.id == segment]
+
+    razem_bledow = 0
+    for w in wyniki:
+        if w.blad:
+            ui.blad(f"{w.id}: sonda nie zmierzyła sceny")
+            ui.console.print(f"[dim]{w.blad.splitlines()[-1][:160]}[/dim]")
+            razem_bledow += 1
+            continue
+
+        twarde = tylko_bledy(w.uchybienia)
+        uwagi = [u for u in w.uchybienia if u.waga != "blad"]
+        razem_bledow += len(twarde)
+
+        opis = f"{w.id}: {len(w.elementy)} obiektów, {w.takty} taktów"
+        if twarde:
+            ui.blad(opis)
+        elif uwagi:
+            ui.warn(opis)
+        else:
+            ui.ok(opis)
+        for u in w.uchybienia:
+            ui.console.print(f"    [dim]{u}[/dim]")
+
+    ui.console.print()
+    if razem_bledow:
+        ui.blad(f"Błędów układu: {razem_bledow}")
+        raise typer.Exit(1)
+    ui.ok("Wszystkie sceny mieszczą się w kadrze i nic na siebie nie nachodzi.")
+
+
+@app.command()
 def status(nazwa: str = NAZWA) -> None:
     """Tabela stanu wszystkich segmentów na każdym etapie + koszty."""
     proj = _otworz(nazwa)

@@ -8,29 +8,15 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from animatrix import formaty
 from animatrix.config import settings
 from animatrix.project import Project
 
 QUALITY_FLAG = {"l": "-ql", "m": "-qm", "h": "-qh", "k": "-qk"}
 
-# Flagi jakości Manima ustawiają rozdzielczość poziomą. Dla pionu (TikTok,
-# Instagram Reels, YouTube Shorts) podajemy ją jawnie przez -r, inaczej wyszłoby
-# wideo 16:9 z czarnymi pasami.
-FORMATY: dict[str, dict[str, tuple[int, int, int]]] = {
-    "poziom": {
-        "l": (854, 480, 15),
-        "m": (1280, 720, 30),
-        "h": (1920, 1080, 60),
-        "k": (3840, 2160, 60),
-    },
-    "pion": {
-        "l": (540, 960, 30),
-        "m": (720, 1280, 30),
-        "h": (1080, 1920, 30),
-        "k": (2160, 3840, 30),
-    },
-}
-DOMYSLNY_FORMAT = "poziom"
+# Rozdzielczość i proporcje kadru trzyma animatrix/formaty.py — flagi jakości
+# Manima ustawiają wyłącznie kadr poziomy, więc podajemy je jawnie przez -r.
+DOMYSLNY_FORMAT = formaty.DOMYSLNY
 
 
 class RenderError(RuntimeError):
@@ -63,7 +49,7 @@ def manim_command() -> list[str]:
     )
 
 
-def subprocess_env(project: Project, *, voice: bool) -> dict[str, str]:
+def subprocess_env(project: Project, *, voice: bool, format: str = DOMYSLNY_FORMAT) -> dict[str, str]:
     cfg = settings()
     env = dict(os.environ)
 
@@ -71,6 +57,7 @@ def subprocess_env(project: Project, *, voice: bool) -> dict[str, str]:
     existing = env.get("PYTHONPATH")
     env["PYTHONPATH"] = f"{project_root}{os.pathsep}{existing}" if existing else project_root
 
+    env["ANIMATRIX_FORMAT"] = formaty.znormalizuj(format)
     env["ANIMATRIX_TTS"] = cfg.tts_provider if voice else "silent"
     env["ANIMATRIX_SILENT_CPS"] = str(cfg.silent_cps)
     env["ANIMATRIX_VOICE_CACHE"] = str(project.voice_cache_dir.resolve())
@@ -113,8 +100,7 @@ def render(
     """Renderuje jedną scenę. Zwraca wynik zamiast rzucać — pętla samonaprawy
     potrzebuje stderr, nie wyjątku."""
     out_name = out_name or scene_file.stem
-    tryb = FORMATY.get(format, FORMATY[DOMYSLNY_FORMAT])
-    szerokosc, wysokosc, fps = tryb.get(quality, tryb["l"])
+    szerokosc, wysokosc, fps = formaty.rozdzielczosc(format, quality)
     cmd = [
         *manim_command(),
         "render",
@@ -143,7 +129,7 @@ def render(
         proc = subprocess.run(
             cmd,
             cwd=project.root,
-            env=subprocess_env(project, voice=voice),
+            env=subprocess_env(project, voice=voice, format=format),
             capture_output=True,
             text=True,
             timeout=timeout,

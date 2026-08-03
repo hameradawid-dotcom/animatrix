@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 SegmentStatus = Literal["draft", "approved"]
 SceneStatus = Literal["pending", "generated", "rendered", "approved", "failed"]
@@ -31,8 +31,17 @@ class ScriptMeta(BaseModel):
     ton: str = ""
     kluczowe_punkty: list[str] = Field(default_factory=list)
     motyw: str = "kh"
-    # "poziom" = 16:9 (YouTube), "pion" = 9:16 (TikTok, Instagram Reels, Shorts)
-    format_wideo: str = "poziom"
+    # Preset kadru: "9:16" (TikTok, Reels), "4:5", "1:1", "16:9".
+    format_wideo: str = "16:9"
+
+    @field_validator("format_wideo", mode="before")
+    @classmethod
+    def _stare_nazwy_formatu(cls, v: object) -> object:
+        """Projekty z pierwszej wersji mają "poziom"/"pion" — mapujemy je,
+        żeby otwierały się bez ręcznej edycji YAML-a."""
+        from animatrix.formaty import ALIASY
+
+        return ALIASY.get(v, v) if isinstance(v, str) else v
 
 
 class Segment(BaseModel):
