@@ -1,0 +1,22 @@
+id: s01
+narracja: Dwieście pięćdziesiąt pięć miejsc. Pięć tysięcy dwustu kandydatów. Tak wyglądał lekarski w Szczecinie
+  w tej rekrutacji.
+szablon: porownanie_liczb
+parametry:
+  pozycje:
+  - wartosc: '@PUM_MIEJSC'
+    etykieta: miejsc
+    kolor: akcent
+  - wartosc: '@PUM_KANDYDATOW'
+    etykieta: kandydatów
+    kolor: alarm
+  separator: true
+  podsumowanie:
+    wartosc: '@PUM_NA_MIEJSCE'
+    opis: 'kandydatów
+
+      na jedno miejsce'
+    kolor: wyroznienie
+    liczba_cyfr: 1
+tempo: {}
+moze_nachodzic: []

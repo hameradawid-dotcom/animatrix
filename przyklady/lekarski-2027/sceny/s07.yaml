@@ -1,0 +1,19 @@
+id: s07
+narracja: A teraz rzecz, która wygląda na błąd. Średni wynik z chemii spadł z czterdziestu trzech procent
+  na czterdzieści jeden.
+szablon: slupki
+parametry:
+  pozycje:
+  - etykieta: '2025'
+    wartosc: 43
+    kolor: stonowany
+  - etykieta: '2026'
+    wartosc: 41
+    kolor: alarm
+  format_wartosci: '{:g}%'
+  puenta: −2 pkt proc.
+tempo: {}
+sekcja:
+  numer: 5
+  etykieta: Średnia z chemii
+moze_nachodzic: []

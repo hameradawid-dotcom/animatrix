@@ -35,11 +35,23 @@ KADR_W = config.frame_width
 KADR_H = config.frame_height
 PION = KADR_W < KADR_H
 
-# Ile pikseli przypada na jednostkę Manima w DOCELOWEJ rozdzielczości formatu
-# (1080p poziomo, 1920p pionowo). Liczone ze stałej referencyjnej, a nie
-# z config.pixel_height, bo inaczej render roboczy -ql miałby inny layout niż
-# finalny -qh.
-PX_NA_JEDNOSTKE = (1920 if PION else 1080) / KADR_H
+# Ile pikseli przypada na jednostkę Manima w DOCELOWEJ rozdzielczości formatu.
+# Liczone z wysokości formatu, a nie z config.pixel_height, bo inaczej render
+# roboczy -ql miałby inny layout niż finalny -qh. Heurystyka „pion = 1920 px"
+# kłamała o formacie 4:5 (1350 px) — `sp()` rozjeżdżało się wtedy z walidatorem.
+def _wysokosc_docelowa() -> int:
+    nazwa = os.environ.get("ANIMATRIX_FORMAT")
+    if nazwa:
+        try:
+            from animatrix.formaty import format_wideo
+
+            return format_wideo(nazwa).wysokosc
+        except Exception:
+            pass
+    return 1920 if PION else 1080
+
+
+PX_NA_JEDNOSTKE = _wysokosc_docelowa() / KADR_H
 
 # Fonty zostają w rozmiarze bazowym również w pionie: kadr 9:16 ogląda się na
 # telefonie, więc duży tekst jest zaletą. Wąski kadr wymusza natomiast KRÓTKIE
@@ -154,6 +166,24 @@ def wzor(tex: str, **kw) -> MathTex:
 # --------------------------------------------------------------------------
 # Liczby — zawsze animowane, nigdy statyczne
 # --------------------------------------------------------------------------
+_TEX_SPECJALNE = {"%": r"\%", "&": r"\&", "#": r"\#", "_": r"\_", "$": r"\$"}
+
+
+def _sufiks_tex(sufiks: str) -> str:
+    """Jednostka licznika idzie do LaTeXa, nie do Pango.
+
+    Surowy `%` to w LaTeXu POCZĄTEK KOMENTARZA — znika bez śladu, zostawiając
+    pusty obiekt, który rozdyma bounding box licznika i rozwala układ. Litery
+    w trybie matematycznym wychodzą kursywą, więc idą w `\\mathrm`.
+    """
+    if not sufiks:
+        return ""
+    tekst = "".join(_TEX_SPECJALNE.get(ch, ch) for ch in sufiks.strip())
+    if any(ch.isalpha() for ch in tekst):
+        tekst = r"\mathrm{" + tekst.replace(" ", r"\ ") + "}"
+    return (r"\," if sufiks[:1] == " " else "") + tekst
+
+
 def licznik(
     tracker: ValueTracker,
     *,
@@ -178,18 +208,24 @@ def licznik(
         font_size=rozmiar or skaluj(ROZMIAR_LICZBA),
         group_with_commas=grupowanie,
         include_sign=False,
-        unit=sufiks or None,
+        unit=_sufiks_tex(sufiks) or None,
     )
 
     # DecimalNumber przebudowuje glify przy każdej zmianie wartości i potrafi
-    # przy tym odpłynąć w bok. Kotwiczymy go na pozycji z pierwszej klatki —
-    # czyli już po tym, jak scena ustawiła layout.
+    # przy tym odpłynąć w bok. Gorzej: odbudowuje je w PIERWOTNYM font_size,
+    # więc gubi każde przeskalowanie nałożone później — a składacz kadru skaluje
+    # całą kompozycję, żeby zmieściła się w strefie bezpiecznej. Dlatego przy
+    # pierwszej klatce zapamiętujemy pozycję i wysokość, i pilnujemy obu.
     kotwica: list = []
+    odniesienie: list = []
 
     def _aktualizuj(m: DecimalNumber) -> None:
         if not kotwica:
             kotwica.append(m.get_center().copy())
+            odniesienie.append(float(m.height))
         m.set_value(tracker.get_value())
+        if odniesienie[0] > 1e-6 and m.height > 1e-6:
+            m.scale(odniesienie[0] / m.height)
         m.move_to(kotwica[0])
 
     num.add_updater(_aktualizuj)
@@ -263,9 +299,13 @@ def pasek_misji(numer: int, etykieta: str) -> VGroup:
         maks = KADR_W - 2 * sp(64)
         if wiersz.width > maks:
             wiersz.scale(maks / wiersz.width)
+        # Kreska idzie pod SPÓD grupy, nie pod jej środek — w pionie pasek ma
+        # dwie linie i `get_left()` wypadał w połowie wysokości, przekreślając
+        # drugą z nich.
+        y = wiersz.get_bottom()[1] - sp(12)
         kreska = Line(
-            wiersz.get_left() + DOWN * sp(12),
-            wiersz.get_right() + DOWN * sp(12),
+            np.array([wiersz.get_left()[0], y, 0.0]),
+            np.array([wiersz.get_right()[0], y, 0.0]),
             color=SIATKA,
             stroke_width=1.5,
         )
@@ -406,6 +446,7 @@ def kadr_sceny():
         wysokosc=KADR_H,
         px_na_jednostke=PX_NA_JEDNOSTKE,
         strefa=fmt.strefa_bezpieczna(),
+        min_tekst_px=fmt.prog_tekstu_px(),
     )
 
 

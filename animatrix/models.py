@@ -89,6 +89,11 @@ class SceneState(BaseModel):
     id: str
     klasa: str
     plik: str
+    # Spec sceny (`sceny/sNN.yaml`). Brak = scena na surowym Pythonie z `plik`.
+    spec: str | None = None
+    # Odcisk specu z chwili ostatniego renderu — po nim widać, że podgląd
+    # jest nieaktualny, zamiast zgadywać po dacie pliku.
+    hash_renderu: str | None = None
     status: SceneStatus = "pending"
     proby_naprawy: int = 0
     ostatni_blad: str | None = None

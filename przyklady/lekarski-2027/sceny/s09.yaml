@@ -1,0 +1,27 @@
+id: s09
+narracja: W tej rekrutacji trzeba było być w najlepszych pięciu procentach kandydatów. Za rok w czterech.
+szablon: siatka_jednostek
+parametry:
+  ilosc: 100
+  kolumny: 10
+  podpis: 100 kandydatów
+  etapy:
+  - od: 0
+    ile: 5
+    kolor: akcent
+  - od: 4
+    ile: 1
+    kolor: alarm
+  licznik:
+    etykieta: trzeba być w top
+    od: '@TOP_PROC_2026'
+    do: '@TOP_PROC_2027'
+    liczba_cyfr: 1
+    sufiks: '%'
+    kolor: akcent
+    po_etapie: 1
+tempo: {}
+sekcja:
+  numer: 7
+  etykieta: Ile miejsc w stawce
+moze_nachodzic: []

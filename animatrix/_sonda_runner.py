@@ -55,8 +55,34 @@ def main() -> int:
         except Exception:
             return False
 
+    def _rozwin(m, limit: int = 400) -> list:
+        """Rozkłada zwykłe VGroup na dzieci.
+
+        Bez tego walidator widzi tylko prostokąt opisany na całej grupie —
+        a napisy nachodzące na siebie WEWNĄTRZ jednej grupy (etykieta osi vs
+        wartość punktu) chowają się w takim prostokącie bez śladu. `Text` czy
+        `MathTex` też są technicznie grupami glifów, więc rozwijamy wyłącznie
+        czyste VGroup.
+        """
+        from manim import VGroup
+
+        if type(m) is not VGroup:
+            return [m]
+        wynik = []
+        for dziecko in m.submobjects:
+            if not _widoczny(dziecko):
+                continue
+            wynik.extend(_rozwin(dziecko, limit))
+            if len(wynik) >= limit:
+                break
+        return wynik or [m]
+
     def _zapamietaj(scena) -> None:
-        stany.append([m for m in scena.mobjects if _widoczny(m)])
+        widoczne = [m for m in scena.mobjects if _widoczny(m)]
+        rozwiniete: list = []
+        for m in widoczne:
+            rozwiniete.extend(_rozwin(m))
+        stany.append(rozwiniete)
 
     def _play(self, *animacje, **kw):
         takty["licznik"] += 1

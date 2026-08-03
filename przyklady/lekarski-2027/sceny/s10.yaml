@@ -1,0 +1,20 @@
+id: s10
+narracja: Arkusz z chemii ma sześćdziesiąt punktów. Jeden punkt na arkuszu to prawie dwa punkty w rekrutacji.
+szablon: siatka_jednostek
+parametry:
+  ilosc: 60
+  kolumny: 10
+  podpis: 60 punktów na arkuszu
+  etapy:
+  - od: 0
+    ile: 1
+    kolor: akcent
+  rownanie:
+  - 1 pkt na arkuszu
+  - '='
+  - 1,67 pkt w rekrutacji
+tempo: {}
+sekcja:
+  numer: 8
+  etykieta: Arkusz z chemii
+moze_nachodzic: []

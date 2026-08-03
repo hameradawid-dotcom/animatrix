@@ -298,6 +298,38 @@ def render_final(
 
 
 @app.command()
+def szablony(
+    nazwa_szablonu: Optional[str] = typer.Argument(None, help="Pokaż parametry jednego szablonu."),
+) -> None:
+    """Katalog szablonów scen — z czego da się złożyć scenę bez pisania Pythona."""
+    import json
+
+    from animatrix.szablony import KATALOG
+
+    if nazwa_szablonu:
+        szablon = KATALOG.get(nazwa_szablonu)
+        if szablon is None:
+            ui.blad(f"Nie znam szablonu '{nazwa_szablonu}'. Dostępne: {', '.join(sorted(KATALOG))}")
+            raise typer.Exit(1)
+        ui.naglowek(szablon.nazwa)
+        ui.console.print(szablon.opis)
+        ui.console.print("\n[bold]Przykładowe parametry[/bold]")
+        ui.console.print(json.dumps(szablon.przyklad, ensure_ascii=False, indent=2))
+        ui.console.print("\n[bold]Pola[/bold]")
+        for pole, opis in szablon.schemat().get("properties", {}).items():
+            typ = opis.get("type") or opis.get("$ref", "").rsplit("/", 1)[-1] or "?"
+            ui.console.print(f"  {pole}: [dim]{typ}[/dim]")
+        return
+
+    ui.naglowek("Szablony scen")
+    for szablon in KATALOG.values():
+        ui.console.print(f"[bold]{szablon.nazwa}[/bold] — {szablon.opis}")
+        if szablon.pokrywa:
+            ui.console.print(f"  [dim]{szablon.pokrywa}[/dim]")
+    ui.console.print("\n[dim]kod — własna klasa w Pythonie, gdy żaden szablon nie pasuje[/dim]")
+
+
+@app.command()
 def sprawdz(
     nazwa: str = NAZWA,
     segment: Optional[str] = typer.Option(None, "--segment"),

@@ -1,0 +1,21 @@
+id: s05
+narracja: I uwaga, bo próg wcale nie rośnie równo. Sto pięćdziesiąt osiem, potem sto czterdzieści trzy,
+  potem sto czterdzieści dziewięć.
+szablon: lamana
+parametry:
+  punkty:
+  - etykieta: '2023'
+    wartosc: 158
+  - etykieta: '2024'
+    wartosc: 143
+  - etykieta: '2025'
+    wartosc: 149
+  wyroznij: min
+  puenta: 'nie rośnie
+
+    równo'
+tempo: {}
+sekcja:
+  numer: 3
+  etykieta: Próg PUM lekarski
+moze_nachodzic: []

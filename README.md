@@ -124,13 +124,57 @@ projects/duzy-rocznik/
 ├── voice.py           # wybór silnika mowy (ElevenLabs / cisza)
 ├── dane.py            # (opcjonalnie) liczby do wykresów, oddzielone od kodu scen
 ├── assets/            # poland.svg, .mol, zdjęcia
-├── scenes/s01.py …    # jedna klasa VoiceoverScene na segment
+├── sceny/s01.yaml …   # sceny deklaratywne: szablon + parametry (edytowalne)
+├── scena_ze_specu.py  # runner scen ze specu — własność narzędzia, nie edytuj
+├── scenes/s01.py …    # sceny na surowym Pythonie (szablon `kod`)
 ├── previews/          # statyczne klatki PNG z etapu 2
 ├── renders/draft/     # rendery robocze -ql
 ├── renders/final/     # rendery finalne -qh
 ├── .cache/voiceover/  # cache audio — klucz to hash tekstu, więc edycja
 └── output/final.mp4   #   jednej sceny nie regeneruje audio pozostałych
 ```
+
+---
+
+## Sceny ze szablonów
+
+Scena nie musi być plikiem Pythona. Może być specem — `sceny/s01.yaml`:
+
+```yaml
+id: s01
+narracja: "Dwieście pięćdziesiąt pięć miejsc. Pięć tysięcy dwustu kandydatów."
+szablon: porownanie_liczb
+sekcja: {numer: 1, etykieta: "Skala"}
+parametry:
+  pozycje:
+    - {wartosc: "@PUM_MIEJSC", etykieta: "miejsc", kolor: akcent}
+    - {wartosc: "@PUM_KANDYDATOW", etykieta: "kandydatów", kolor: alarm}
+  podsumowanie: {wartosc: "@PUM_NA_MIEJSCE", opis: "na jedno miejsce", liczba_cyfr: 1}
+tempo:                    # opcjonalnie — udziały tracker.duration, suma 1.0
+  liczba_1: 0.30
+  liczba_2: 0.30
+  podsumowanie: 0.28
+  akcent: 0.12
+```
+
+- `animatrix szablony` — katalog szablonów, `animatrix szablony slupki` — jego parametry.
+- **Kolory podajesz nazwą roli** (`akcent`, `alarm`, `wyroznienie`, `stonowany`),
+  nie hexem. Zmiana motywu nie wymaga wtedy dotykania scen.
+- **`"@NAZWA"` sięga po wartość z `dane.py`** — liczba w kadrze zostaje przy
+  udokumentowanym źródle, a nie wędruje do YAML-a jako luźny literał.
+- **Pozycji nie podajesz.** Szablon buduje treść, a składacz kadru ustawia ją
+  w strefie bezpiecznej platformy i skaluje, żeby się zmieściła. Ta sama scena
+  składa się poprawnie w 9:16, 4:5, 1:1 i 16:9.
+- Jeśli żaden szablon nie pasuje, `szablon: kod` wskazuje własną klasę:
+
+```yaml
+szablon: kod
+parametry: {plik: scenes/s07.py, klasa: Scena_S07}
+```
+
+`animatrix sprawdz <projekt>` mierzy układ **bez renderowania** (~2 s na scenę)
+i zgłasza kolizje, wyjścia poza kadr, wejścia w obszar zasłaniany przez
+interfejs TikToka oraz tekst poniżej progu czytelności.
 
 ---
 

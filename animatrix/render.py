@@ -96,6 +96,7 @@ def render(
     voice: bool = True,
     format: str = DOMYSLNY_FORMAT,
     timeout: int = 3600,
+    extra_env: dict[str, str] | None = None,
 ) -> RenderResult:
     """Renderuje jedną scenę. Zwraca wynik zamiast rzucać — pętla samonaprawy
     potrzebuje stderr, nie wyjątku."""
@@ -125,11 +126,14 @@ def render(
         cmd += ["--format", "mp4"]
     cmd += [str(scene_file), class_name]
 
+    env = subprocess_env(project, voice=voice, format=format)
+    env.update(extra_env or {})
+
     try:
         proc = subprocess.run(
             cmd,
             cwd=project.root,
-            env=subprocess_env(project, voice=voice, format=format),
+            env=env,
             capture_output=True,
             text=True,
             timeout=timeout,

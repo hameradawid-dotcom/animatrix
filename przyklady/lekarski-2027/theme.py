@@ -10,6 +10,8 @@ przy kolejnych uruchomieniach (chyba że wywołasz `animatrix sync-runtime --for
 
 from __future__ import annotations
 
+import os
+
 from manim import *  # noqa: F403
 
 from motyw import *  # noqa: F403
@@ -33,11 +35,23 @@ KADR_W = config.frame_width
 KADR_H = config.frame_height
 PION = KADR_W < KADR_H
 
-# Ile pikseli przypada na jednostkę Manima w DOCELOWEJ rozdzielczości formatu
-# (1080p poziomo, 1920p pionowo). Liczone ze stałej referencyjnej, a nie
-# z config.pixel_height, bo inaczej render roboczy -ql miałby inny layout niż
-# finalny -qh.
-PX_NA_JEDNOSTKE = (1920 if PION else 1080) / KADR_H
+# Ile pikseli przypada na jednostkę Manima w DOCELOWEJ rozdzielczości formatu.
+# Liczone z wysokości formatu, a nie z config.pixel_height, bo inaczej render
+# roboczy -ql miałby inny layout niż finalny -qh. Heurystyka „pion = 1920 px"
+# kłamała o formacie 4:5 (1350 px) — `sp()` rozjeżdżało się wtedy z walidatorem.
+def _wysokosc_docelowa() -> int:
+    nazwa = os.environ.get("ANIMATRIX_FORMAT")
+    if nazwa:
+        try:
+            from animatrix.formaty import format_wideo
+
+            return format_wideo(nazwa).wysokosc
+        except Exception:
+            pass
+    return 1920 if PION else 1080
+
+
+PX_NA_JEDNOSTKE = _wysokosc_docelowa() / KADR_H
 
 # Fonty zostają w rozmiarze bazowym również w pionie: kadr 9:16 ogląda się na
 # telefonie, więc duży tekst jest zaletą. Wąski kadr wymusza natomiast KRÓTKIE
@@ -152,6 +166,24 @@ def wzor(tex: str, **kw) -> MathTex:
 # --------------------------------------------------------------------------
 # Liczby — zawsze animowane, nigdy statyczne
 # --------------------------------------------------------------------------
+_TEX_SPECJALNE = {"%": r"\%", "&": r"\&", "#": r"\#", "_": r"\_", "$": r"\$"}
+
+
+def _sufiks_tex(sufiks: str) -> str:
+    """Jednostka licznika idzie do LaTeXa, nie do Pango.
+
+    Surowy `%` to w LaTeXu POCZĄTEK KOMENTARZA — znika bez śladu, zostawiając
+    pusty obiekt, który rozdyma bounding box licznika i rozwala układ. Litery
+    w trybie matematycznym wychodzą kursywą, więc idą w `\\mathrm`.
+    """
+    if not sufiks:
+        return ""
+    tekst = "".join(_TEX_SPECJALNE.get(ch, ch) for ch in sufiks.strip())
+    if any(ch.isalpha() for ch in tekst):
+        tekst = r"\mathrm{" + tekst.replace(" ", r"\ ") + "}"
+    return (r"\," if sufiks[:1] == " " else "") + tekst
+
+
 def licznik(
     tracker: ValueTracker,
     *,
@@ -176,18 +208,24 @@ def licznik(
         font_size=rozmiar or skaluj(ROZMIAR_LICZBA),
         group_with_commas=grupowanie,
         include_sign=False,
-        unit=sufiks or None,
+        unit=_sufiks_tex(sufiks) or None,
     )
 
     # DecimalNumber przebudowuje glify przy każdej zmianie wartości i potrafi
-    # przy tym odpłynąć w bok. Kotwiczymy go na pozycji z pierwszej klatki —
-    # czyli już po tym, jak scena ustawiła layout.
+    # przy tym odpłynąć w bok. Gorzej: odbudowuje je w PIERWOTNYM font_size,
+    # więc gubi każde przeskalowanie nałożone później — a składacz kadru skaluje
+    # całą kompozycję, żeby zmieściła się w strefie bezpiecznej. Dlatego przy
+    # pierwszej klatce zapamiętujemy pozycję i wysokość, i pilnujemy obu.
     kotwica: list = []
+    odniesienie: list = []
 
     def _aktualizuj(m: DecimalNumber) -> None:
         if not kotwica:
             kotwica.append(m.get_center().copy())
+            odniesienie.append(float(m.height))
         m.set_value(tracker.get_value())
+        if odniesienie[0] > 1e-6 and m.height > 1e-6:
+            m.scale(odniesienie[0] / m.height)
         m.move_to(kotwica[0])
 
     num.add_updater(_aktualizuj)
@@ -261,9 +299,13 @@ def pasek_misji(numer: int, etykieta: str) -> VGroup:
         maks = KADR_W - 2 * sp(64)
         if wiersz.width > maks:
             wiersz.scale(maks / wiersz.width)
+        # Kreska idzie pod SPÓD grupy, nie pod jej środek — w pionie pasek ma
+        # dwie linie i `get_left()` wypadał w połowie wysokości, przekreślając
+        # drugą z nich.
+        y = wiersz.get_bottom()[1] - sp(12)
         kreska = Line(
-            wiersz.get_left() + DOWN * sp(12),
-            wiersz.get_right() + DOWN * sp(12),
+            np.array([wiersz.get_left()[0], y, 0.0]),
+            np.array([wiersz.get_right()[0], y, 0.0]),
             color=SIATKA,
             stroke_width=1.5,
         )
@@ -371,3 +413,70 @@ def pokoloruj_regiony(
         sub = regiony.get(nazwa)
         if sub is not None:
             sub.set_fill(skala_koloru(wartosc, lo, hi, od=od, do=do), opacity=1.0)
+
+
+# --------------------------------------------------------------------------
+# Kontrola układu
+#
+# Most między Manimem a `animatrix.uklad`. Scena podaje nazwane obiekty, my
+# wyciągamy z nich prostokąty i sprawdzamy kadr, strefę bezpieczną, kolizje
+# i czytelność tekstu. Uchybienia lecą na stderr, więc widać je w logu renderu
+# i w interfejsie — a przy ANIMATRIX_STRICT=1 render się na nich zatrzymuje.
+# --------------------------------------------------------------------------
+def prostokat_z(mobject: Mobject):
+    from animatrix.uklad import Prostokat
+
+    lewo, dol = mobject.get_corner(DOWN + LEFT)[:2]
+    prawo, gora = mobject.get_corner(UP + RIGHT)[:2]
+    return Prostokat(float(lewo), float(dol), float(prawo), float(gora))
+
+
+def kadr_sceny():
+    from animatrix.uklad import Kadr
+
+    from animatrix.formaty import format_wideo
+
+    nazwa = os.environ.get("ANIMATRIX_FORMAT") or ("9:16" if PION else "16:9")
+    try:
+        fmt = format_wideo(nazwa)
+    except Exception:
+        fmt = format_wideo("9:16" if PION else "16:9")
+    return Kadr(
+        szerokosc=KADR_W,
+        wysokosc=KADR_H,
+        px_na_jednostke=PX_NA_JEDNOSTKE,
+        strefa=fmt.strefa_bezpieczna(),
+        min_tekst_px=fmt.prog_tekstu_px(),
+    )
+
+
+def sprawdz_uklad(elementy: dict, *, moze_nachodzic: tuple = ()) -> list:
+    """Waliduje kompozycję PRZED renderem. `elementy` to {nazwa: mobject}."""
+    import sys as _sys
+
+    from animatrix.uklad import Element, podsumowanie, waliduj
+
+    kadr = kadr_sceny()
+    lista = [
+        Element(
+            id=nazwa,
+            prostokat=prostokat_z(m),
+            tekst=_zawiera_tekst(m),
+            rozmiar_px=float(m.height) * PX_NA_JEDNOSTKE if _zawiera_tekst(m) else None,
+            moze_nachodzic=nazwa in moze_nachodzic,
+        )
+        for nazwa, m in elementy.items()
+        if m is not None
+    ]
+    uchybienia = waliduj(lista, kadr)
+    if uchybienia:
+        print(f"[uklad] {podsumowanie(uchybienia)}", file=_sys.stderr)
+        for u in uchybienia:
+            print(f"[uklad] {u}", file=_sys.stderr)
+        if os.environ.get("ANIMATRIX_STRICT") == "1":
+            twarde = [u for u in uchybienia if u.waga == "blad"]
+            if twarde:
+                raise RuntimeError(
+                    "Układ sceny ma błędy: " + "; ".join(u.opis for u in twarde)
+                )
+    return uchybienia

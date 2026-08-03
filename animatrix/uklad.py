@@ -107,6 +107,7 @@ class Kadr:
     wysokosc: float
     px_na_jednostke: float
     strefa: StrefaBezpieczna = field(default_factory=StrefaBezpieczna)
+    min_tekst_px: int = MIN_TEKST_PX
 
     @classmethod
     def z_formatu(cls, nazwa: str | None, wysokosc_jednostek: float = 8.0) -> "Kadr":
@@ -116,6 +117,7 @@ class Kadr:
             wysokosc=wysokosc_jednostek,
             px_na_jednostke=fmt.wysokosc / wysokosc_jednostek,
             strefa=fmt.strefa_bezpieczna(),
+            min_tekst_px=fmt.prog_tekstu_px(),
         )
 
     def px(self, jednostki: float) -> float:
@@ -156,11 +158,13 @@ def waliduj(
     elementy: Iterable[Element],
     kadr: Kadr,
     *,
-    min_tekst_px: float = MIN_TEKST_PX,
+    min_tekst_px: float | None = None,
     prog_kolizji: float = PROG_KOLIZJI,
 ) -> list[Uchybienie]:
     """Sprawdza kompozycję przed renderem. Zwraca listę uchybień, nie rzuca."""
     elementy = list(elementy)
+    if min_tekst_px is None:
+        min_tekst_px = kadr.min_tekst_px
     uchybienia: list[Uchybienie] = []
     pelny = kadr.pelny()
     bezpieczny = kadr.bezpieczny()

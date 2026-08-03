@@ -1,0 +1,19 @@
+id: s04
+narracja: Miejsc na lekarskim w całej Polsce przybywa o dwa procent. Kandydatów o dwadzieścia.
+szablon: paski_procentowe
+parametry:
+  pozycje:
+  - etykieta: miejsca
+    wartosc: '@WZROST_MIEJSC_PROC'
+    kolor: stonowany
+  - etykieta: kandydaci
+    wartosc: '@WZROST_2026_2027_PROC'
+    kolor: alarm
+  puenta: 'dziesięć razy
+
+    szybciej'
+tempo: {}
+sekcja:
+  numer: 2
+  etykieta: Nożyce
+moze_nachodzic: []

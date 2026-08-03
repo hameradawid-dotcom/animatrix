@@ -1,0 +1,21 @@
+id: s06
+narracja: W tej rekrutacji pierwsza lista pokazała sto siedemdziesiąt pięć. Po trzech turach zeszła do
+  stu sześćdziesięciu trzech.
+szablon: schodki
+parametry:
+  wiersze:
+  - etykieta: lista 1
+    wartosc: 175
+  - etykieta: lista 2
+    wartosc: 166
+  - etykieta: lista 3
+    wartosc: 163
+  podsumowanie:
+    etykieta: szacowany próg końcowy
+    wartosc: '@PUM_PROG_2026_SZAC'
+    kolor: wyroznienie
+tempo: {}
+sekcja:
+  numer: 4
+  etykieta: Rekrutacja 2026
+moze_nachodzic: []

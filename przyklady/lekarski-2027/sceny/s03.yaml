@@ -1,0 +1,26 @@
+id: s03
+narracja: W 2025 maturę zdawało 256 tysięcy osób. W 2026 już 321 tysięcy. W 2027 będzie ich około 386
+  tysięcy.
+szablon: slupki
+parametry:
+  pozycje:
+  - etykieta: '2025'
+    wartosc: 256
+    kolor: akcent
+  - etykieta: '2026'
+    wartosc: 321
+    kolor: akcent
+  - etykieta: '2027'
+    wartosc: 386
+    kolor: wyroznienie
+    adnotacja: prognoza
+  - etykieta: '2028'
+    wartosc: 271
+    kolor: stonowany
+    przygaszony: true
+  jednostka: tysięcy maturzystów
+tempo: {}
+sekcja:
+  numer: 1
+  etykieta: Skala rocznika
+moze_nachodzic: []

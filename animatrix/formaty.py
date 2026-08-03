@@ -47,6 +47,11 @@ STREFY = {
     "brak": StrefaBezpieczna(),
 }
 
+# Próg czytelności tekstu w pikselach finalnego renderu. Film oglądany
+# w telefonie, w ruchu, wymaga większej litery niż ten sam materiał puszczony
+# na laptopie — dlatego próg zależy od platformy, a nie jest jedną stałą.
+PROG_TEKSTU_PX = {"tiktok": 28, "reels": 28, "feed": 24, "youtube": 20, "brak": 20}
+
 
 @dataclass(frozen=True)
 class Format:
@@ -67,6 +72,9 @@ class Format:
 
     def strefa_bezpieczna(self) -> StrefaBezpieczna:
         return STREFY.get(self.strefa, STREFY["brak"])
+
+    def prog_tekstu_px(self) -> int:
+        return PROG_TEKSTU_PX.get(self.strefa, PROG_TEKSTU_PX["brak"])
 
 
 FORMATY = {

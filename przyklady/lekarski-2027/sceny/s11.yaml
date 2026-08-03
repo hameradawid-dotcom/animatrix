@@ -1,0 +1,28 @@
+id: s11
+narracja: Skok progu o dziesięć punktów to sześć zadań na arkuszu. Tyle dzieli cię od rocznika przed tobą.
+szablon: siatka_jednostek
+parametry:
+  ilosc: 60
+  kolumny: 10
+  licznik_nad: true
+  licznik:
+    etykieta: próg 149 → 159
+    od: 0
+    do: '@SKOK_PROGU_PKT'
+    sufiks: ' pkt progu'
+    kolor: alarm
+    rozmiar: 52
+    po_etapie: 0
+  etapy:
+  - od: 0
+    ile: 6
+    kolor: alarm
+    kaskada: true
+  puenta: '6 zadań
+
+    na arkuszu'
+tempo: {}
+sekcja:
+  numer: 9
+  etykieta: Cena jednego roku
+moze_nachodzic: []

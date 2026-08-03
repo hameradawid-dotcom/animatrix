@@ -1,0 +1,21 @@
+id: s12
+narracja: Realny cel na Szczecin w 2027 to około stu siedemdziesięciu punktów. Osiemdziesiąt pięć procent
+  z dwóch rozszerzeń.
+szablon: licznik_hero
+parametry:
+  wartosc: '@PUM_CEL_2027_SZAC'
+  kolor: wyroznienie
+  rozmiar: 110
+  podpis: / 200 pkt
+  ramka: true
+  opis: '85%
+
+    z chemii i biologii'
+  zastrzezenie: 'szacunek
+
+    na podstawie dynamiki 2025→2026'
+tempo: {}
+sekcja:
+  numer: 10
+  etykieta: Cel
+moze_nachodzic: []

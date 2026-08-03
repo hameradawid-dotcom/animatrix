@@ -1,0 +1,12 @@
+id: s02
+narracja: Za rok będzie trudniej i da się to policzyć co do punktu.
+szablon: karta_tytulowa
+parametry:
+  eyebrow: // zadanie
+  tytul: 'Lekarski
+
+    2027'
+  podpis: PUM Szczecin
+  ramka: true
+tempo: {}
+moze_nachodzic: []

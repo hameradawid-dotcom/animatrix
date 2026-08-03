@@ -17,4 +17,11 @@ dist/
 # media/, renders/, previews/, output/ i .cache/ — tam lądują gigabajty.
 projects/
 
+# Przykłady wersjonujemy, ale bez artefaktów renderu — to gigabajty.
+przyklady/*/media/
+przyklady/*/renders/
+przyklady/*/previews/
+przyklady/*/output/
+przyklady/*/.cache/
+
 .DS_Store

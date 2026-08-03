@@ -1,0 +1,17 @@
+id: s08
+narracja: Matury poszły gorzej, a próg i tak poszedł w górę. Bo próg to nie ocena, tylko miejsce w kolejce.
+szablon: siatka_progu
+parametry:
+  kolumny: 9
+  wiersze: 11
+  prog_od: 2.5
+  prog_do: 1.5
+  etykieta_progu: próg
+  puenta: 'liczy się,
+
+    ilu ma lepiej'
+tempo: {}
+sekcja:
+  numer: 6
+  etykieta: Mechanika progu
+moze_nachodzic: []

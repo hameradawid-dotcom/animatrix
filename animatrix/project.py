@@ -84,6 +84,18 @@ class Project:
         return self.root / "scenes"
 
     @property
+    def specs_dir(self) -> Path:
+        """Sceny deklaratywne (`sceny/sNN.yaml`). `scenes/` trzyma surowy Python."""
+        return self.root / "sceny"
+
+    def spec_path(self, seg_id: str) -> Path:
+        return self.specs_dir / f"{seg_id}.yaml"
+
+    @property
+    def runner_path(self) -> Path:
+        return self.root / "scena_ze_specu.py"
+
+    @property
     def previews_dir(self) -> Path:
         return self.root / "previews"
 
@@ -172,6 +184,10 @@ class Project:
                 continue
             shutil.copyfile(src, dst)
             written.append(nazwa)
+
+        # Runner scen ze specu to maszyneria narzędzia, nie plik użytkownika —
+        # nadpisujemy go zawsze, żeby projekt nie został na starej wersji.
+        shutil.copyfile(RUNTIME_DIR / "scena_ze_specu.py", self.root / "scena_ze_specu.py")
         return written
 
     # --- stan ---

@@ -49,6 +49,7 @@ def zmierz(
     *,
     format: str,
     timeout: int = 180,
+    extra_env: dict[str, str] | None = None,
 ) -> PomiarSceny:
     """Uruchamia sondę w osobnym procesie.
 
@@ -62,6 +63,7 @@ def zmierz(
     env["ANIMATRIX_SONDA_KLASA"] = klasa
     env["ANIMATRIX_SONDA_W"] = str(fmt.szerokosc)
     env["ANIMATRIX_SONDA_H"] = str(fmt.wysokosc)
+    env.update(extra_env or {})
 
     komenda = manim_command()
     python = komenda[0] if komenda[0] != "manim" else sys.executable
@@ -118,13 +120,17 @@ def zmierz_projekt(project: Project, *, format: str | None = None) -> list[Pomia
 
     wyniki: list[PomiarSceny] = []
     for st in stan.segmenty:
-        plik = project.root / st.plik
+        try:
+            plik, klasa, extra = stage_scenes.cel_renderu(project, st)
+        except Exception as exc:
+            wyniki.append(PomiarSceny(st.id, fmt, 0, [], [], blad=str(exc)))
+            continue
         if not plik.exists():
             wyniki.append(
-                PomiarSceny(st.id, fmt, 0, [], [], blad=f"brak pliku sceny {st.plik}")
+                PomiarSceny(st.id, fmt, 0, [], [], blad=f"brak pliku sceny {plik.name}")
             )
             continue
-        pomiar = zmierz(project, plik, st.klasa, format=fmt)
+        pomiar = zmierz(project, plik, klasa, format=fmt, extra_env=extra)
         pomiar.id = st.id
         wyniki.append(pomiar)
     return wyniki

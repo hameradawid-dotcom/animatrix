@@ -29,7 +29,12 @@ def _wymagaj_storyboardu(project: Project) -> tuple[Script, Storyboard]:
 
 
 def synchronizuj(project: Project, script: Script) -> Scenes:
-    """Dokłada wpisy dla nowych segmentów, zachowując stan istniejących."""
+    """Dokłada wpisy dla nowych segmentów, zachowując stan istniejących.
+
+    Podpina też spec sceny, jeśli `sceny/<id>.yaml` pojawił się na dysku —
+    dzięki temu przełączenie sceny z kodu na szablon nie wymaga edycji
+    `scenes.yaml` ręcznie.
+    """
     stan = project.load_scenes()
     istniejace = {s.id: s for s in stan.segmenty}
     stan.segmenty = [
@@ -43,12 +48,41 @@ def synchronizuj(project: Project, script: Script) -> Scenes:
         )
         for seg in script.segmenty
     ]
+    for st in stan.segmenty:
+        sciezka = project.spec_path(st.id)
+        st.spec = project.rel(sciezka) if sciezka.exists() else None
     project.save_scenes(stan)
     return stan
 
 
 def sciezka_kodu(project: Project, st: SceneState) -> Path:
     return project.root / st.plik
+
+
+def cel_renderu(project: Project, st: SceneState) -> tuple[Path, str, dict[str, str]]:
+    """Co właściwie renderujemy: własną klasę w Pythonie czy scenę ze specu.
+
+    Manim przyjmuje PLIK i KLASĘ, więc scena deklaratywna renderuje się przez
+    wspólny runner (`scena_ze_specu.py`), a spec jedzie do niego zmienną
+    środowiskową.
+    """
+    if not st.spec:
+        return sciezka_kodu(project, st), st.klasa, {}
+
+    from animatrix import scena as scena_mod
+    from animatrix.szablony.odtwarzacz import ZMIENNA_SPECU
+
+    spec = scena_mod.wczytaj(project.root / st.spec)
+    if spec.wlasny_kod:
+        plik = project.root / spec.parametry["plik"]
+        return plik, spec.parametry["klasa"], {}
+    if not project.runner_path.exists():
+        project.install_runtime(project.load_script().meta.motyw)
+    return (
+        project.runner_path,
+        "ScenaZeSpecu",
+        {ZMIENNA_SPECU: str((project.root / st.spec).resolve())},
+    )
 
 
 def format_wideo(project: Project) -> str:
@@ -89,14 +123,25 @@ def renderuj_z_naprawa(
     max_prob: int = MAX_PROB_NAPRAWY,
 ) -> bool:
     """Render roboczy (-ql, z audio) z pętlą samonaprawy. Zwraca True przy sukcesie."""
-    plik = sciezka_kodu(project, st)
+    plik, klasa, extra = cel_renderu(project, st)
+    ze_specu = plik == project.runner_path
+    if ze_specu:
+        # Błąd sceny ze specu leży w YAML-u albo w szablonie — kazanie modelowi
+        # przepisywać wspólny runner tylko zepsułoby pozostałe sceny.
+        max_prob = 0
     kod = plik.read_text(encoding="utf-8")
     proba = 0
 
     while True:
         with ui.console.status(f"{st.id}: render roboczy…"):
             wynik = render.render(
-                project, plik, st.klasa, quality="l", voice=True, format=format_wideo(project)
+                project,
+                plik,
+                klasa,
+                quality="l",
+                voice=True,
+                format=format_wideo(project),
+                extra_env=extra,
             )
 
         if wynik.ok:
@@ -301,15 +346,17 @@ def render_finalny(project: Project, *, jakosc: str = "h", tylko_scal: bool = Fa
             pliki.append(cel)
             continue
 
+        plik, klasa, extra = cel_renderu(project, st)
         with ui.console.status(f"{st.id}: render finalny…"):
             wynik = render.render(
                 project,
-                sciezka_kodu(project, st),
-                st.klasa,
+                plik,
+                klasa,
                 quality=jakosc,
                 voice=True,
                 format=script.meta.format_wideo,
                 timeout=7200,
+                extra_env=extra,
             )
         if not wynik.ok:
             ui.console.print(f"[dim]{wynik.tail[-1500:]}[/dim]")
