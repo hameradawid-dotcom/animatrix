@@ -13,6 +13,25 @@ from animatrix.project import Project
 
 QUALITY_FLAG = {"l": "-ql", "m": "-qm", "h": "-qh", "k": "-qk"}
 
+# Flagi jakości Manima ustawiają rozdzielczość poziomą. Dla pionu (TikTok,
+# Instagram Reels, YouTube Shorts) podajemy ją jawnie przez -r, inaczej wyszłoby
+# wideo 16:9 z czarnymi pasami.
+FORMATY: dict[str, dict[str, tuple[int, int, int]]] = {
+    "poziom": {
+        "l": (854, 480, 15),
+        "m": (1280, 720, 30),
+        "h": (1920, 1080, 60),
+        "k": (3840, 2160, 60),
+    },
+    "pion": {
+        "l": (540, 960, 30),
+        "m": (720, 1280, 30),
+        "h": (1080, 1920, 30),
+        "k": (2160, 3840, 30),
+    },
+}
+DOMYSLNY_FORMAT = "poziom"
+
 
 class RenderError(RuntimeError):
     pass
@@ -88,15 +107,22 @@ def render(
     still: bool = False,
     out_name: str | None = None,
     voice: bool = True,
+    format: str = DOMYSLNY_FORMAT,
     timeout: int = 3600,
 ) -> RenderResult:
     """Renderuje jedną scenę. Zwraca wynik zamiast rzucać — pętla samonaprawy
     potrzebuje stderr, nie wyjątku."""
     out_name = out_name or scene_file.stem
+    tryb = FORMATY.get(format, FORMATY[DOMYSLNY_FORMAT])
+    szerokosc, wysokosc, fps = tryb.get(quality, tryb["l"])
     cmd = [
         *manim_command(),
         "render",
         QUALITY_FLAG.get(quality, "-ql"),
+        "-r",
+        f"{szerokosc},{wysokosc}",
+        "--fps",
+        str(fps),
         "--disable_caching",
         "--media_dir",
         str(project.media_dir),

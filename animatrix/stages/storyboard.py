@@ -148,6 +148,7 @@ def zbuduj_podglad(
             still=True,
             out_name=f"podglad_{item.id}",
             voice=False,
+            format=script.meta.format_wideo,
             timeout=600,
         )
         if wynik.ok:

@@ -51,6 +51,10 @@ def sciezka_kodu(project: Project, st: SceneState) -> Path:
     return project.root / st.plik
 
 
+def format_wideo(project: Project) -> str:
+    return project.load_script().meta.format_wideo
+
+
 def _generuj_kod(project: Project, llm: LLM, script: Script, sb: Storyboard, st: SceneState) -> str:
     seg = script.get(st.id)
     item = sb.get(st.id)
@@ -91,7 +95,9 @@ def renderuj_z_naprawa(
 
     while True:
         with ui.console.status(f"{st.id}: render roboczy…"):
-            wynik = render.render(project, plik, st.klasa, quality="l", voice=True)
+            wynik = render.render(
+                project, plik, st.klasa, quality="l", voice=True, format=format_wideo(project)
+            )
 
         if wynik.ok:
             cel = project.renders_dir / "draft" / f"{st.id}.mp4"
@@ -302,6 +308,7 @@ def render_finalny(project: Project, *, jakosc: str = "h", tylko_scal: bool = Fa
                 st.klasa,
                 quality=jakosc,
                 voice=True,
+                format=script.meta.format_wideo,
                 timeout=7200,
             )
         if not wynik.ok:

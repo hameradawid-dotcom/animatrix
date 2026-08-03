@@ -157,6 +157,11 @@ def new(
         "--motyw",
         help="Stylistyka: kh (korepetytorhamera.pl), misja (briefing), ciemny (neutralna).",
     ),
+    format_wideo: str = typer.Option(
+        "poziom",
+        "--format",
+        help="poziom = 16:9 (YouTube), pion = 9:16 (TikTok, Instagram Reels, Shorts).",
+    ),
 ) -> None:
     """Tworzy nowy projekt i zbiera brief."""
     ui.naglowek("Nowy projekt")
@@ -174,6 +179,7 @@ def new(
         ton=ton,
         kluczowe_punkty=lista_punktow,
         motyw=motyw,
+        format_wideo=format_wideo,
     )
     try:
         proj = Project.create(nazwa, meta)

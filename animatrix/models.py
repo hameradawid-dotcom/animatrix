@@ -31,6 +31,8 @@ class ScriptMeta(BaseModel):
     ton: str = ""
     kluczowe_punkty: list[str] = Field(default_factory=list)
     motyw: str = "kh"
+    # "poziom" = 16:9 (YouTube), "pion" = 9:16 (TikTok, Instagram Reels, Shorts)
+    format_wideo: str = "poziom"
 
 
 class Segment(BaseModel):

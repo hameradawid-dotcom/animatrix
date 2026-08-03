@@ -1,0 +1,72 @@
+meta:
+  temat: Dostać się na lekarski w 2027
+  jezyk: pl
+  docelowa_dlugosc_s: 75
+  grupa_docelowa: maturzyści celujący w medycynę
+  ton: briefing, konkretny, bez lania wody
+  kluczowe_punkty:
+  - podwójny rocznik 2027
+  - próg PUM lekarski
+  - ile daje jeden punkt z chemii
+  - struktura arkusza
+  motyw: misja
+  format_wideo: pion
+segmenty:
+- id: s01
+  narracja: Dwieście pięćdziesiąt pięć miejsc. Pięć tysięcy dwustu kandydatów. Tak wyglądał
+    lekarski w Szczecinie w tej rekrutacji.
+  status: approved
+  uwagi: []
+- id: s02
+  narracja: Za rok będzie trudniej i da się to policzyć co do punktu.
+  status: approved
+  uwagi: []
+- id: s03
+  narracja: W 2025 maturę zdawało 256 tysięcy osób. W 2026 już 321 tysięcy. W 2027 będzie
+    ich około 386 tysięcy.
+  status: approved
+  uwagi: []
+- id: s04
+  narracja: Miejsc na lekarskim w całej Polsce przybywa o dwa procent. Kandydatów o dwadzieścia.
+  status: approved
+  uwagi: []
+- id: s05
+  narracja: I uwaga, bo próg wcale nie rośnie równo. Sto pięćdziesiąt osiem, potem sto
+    czterdzieści trzy, potem sto czterdzieści dziewięć.
+  status: approved
+  uwagi: []
+- id: s06
+  narracja: W tej rekrutacji pierwsza lista pokazała sto siedemdziesiąt pięć. Po trzech
+    turach zeszła do stu sześćdziesięciu trzech.
+  status: approved
+  uwagi: []
+- id: s07
+  narracja: A teraz rzecz, która wygląda na błąd. Średni wynik z chemii spadł z czterdziestu
+    trzech procent na czterdzieści jeden.
+  status: approved
+  uwagi: []
+- id: s08
+  narracja: Matury poszły gorzej, a próg i tak poszedł w górę. Bo próg to nie ocena, tylko
+    miejsce w kolejce.
+  status: approved
+  uwagi: []
+- id: s09
+  narracja: W tej rekrutacji trzeba było być w najlepszych pięciu procentach kandydatów.
+    Za rok w czterech.
+  status: approved
+  uwagi: []
+- id: s10
+  narracja: Arkusz z chemii ma sześćdziesiąt punktów. Jeden punkt na arkuszu to prawie
+    dwa punkty w rekrutacji.
+  status: approved
+  uwagi: []
+- id: s11
+  narracja: Skok progu o dziesięć punktów to sześć zadań na arkuszu. Tyle dzieli cię od
+    rocznika przed tobą.
+  status: approved
+  uwagi: []
+- id: s12
+  narracja: Realny cel na Szczecin w 2027 to około stu siedemdziesięciu punktów. Osiemdziesiąt
+    pięć procent z dwóch rozszerzeń.
+  status: approved
+  uwagi: []

@@ -54,4 +54,3 @@ ROZMIAR_LICZBA = 84
 # --- skala odstępów (px z BRAND.md → jednostki Manima przy kadrze 8 jednostek
 # wysokości = 1080 px). Nigdy nie wpisuj wartości spoza tej skali.
 SKALA_PX = [4, 8, 12, 16, 24, 32, 48, 64, 96, 128]
-PX_NA_JEDNOSTKE = 1080 / 8
