@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from explainer import merge, prompts, render, ui
-from explainer.llm import LLM, LLMError
-from explainer.models import SceneState, Scenes, Script, Storyboard, scene_class_name
-from explainer.project import Project
-from explainer.stages.common import (
+from animatrix import merge, prompts, render, ui
+from animatrix.llm import LLM, LLMError
+from animatrix.models import SceneState, Scenes, Script, Storyboard, scene_class_name
+from animatrix.project import Project
+from animatrix.stages.common import (
     dopisz_uwage,
     dostepne_assety,
     make_llm,
@@ -22,9 +22,9 @@ def _wymagaj_storyboardu(project: Project) -> tuple[Script, Storyboard]:
     script = project.load_script()
     sb = project.load_storyboard()
     if not script.approved:
-        raise RuntimeError("Etap 3 wymaga zaakceptowanego scenariusza (`explainer script`).")
+        raise RuntimeError("Etap 3 wymaga zaakceptowanego scenariusza (`animatrix script`).")
     if not sb.approved or len(sb.segmenty) != len(script.segmenty):
-        raise RuntimeError("Etap 3 wymaga zaakceptowanego storyboardu (`explainer storyboard`).")
+        raise RuntimeError("Etap 3 wymaga zaakceptowanego storyboardu (`animatrix storyboard`).")
     return script, sb
 
 
@@ -279,7 +279,7 @@ def render_finalny(project: Project, *, jakosc: str = "h", tylko_scal: bool = Fa
     stan = project.load_scenes()
     if not stan.approved or len(stan.segmenty) != len(script.segmenty):
         raise RuntimeError(
-            "Finalny render wymaga zatwierdzenia wszystkich scen. Uruchom `explainer scenes`."
+            "Finalny render wymaga zatwierdzenia wszystkich scen. Uruchom `animatrix scenes`."
         )
 
     ui.naglowek(f"Render finalny ({'4K' if jakosc == 'k' else '1080p'})")
@@ -308,7 +308,7 @@ def render_finalny(project: Project, *, jakosc: str = "h", tylko_scal: bool = Fa
             ui.console.print(f"[dim]{wynik.tail[-1500:]}[/dim]")
             raise RuntimeError(
                 f"{st.id}: render finalny padł, mimo że render roboczy przechodził. "
-                "Sprawdź scenę i uruchom `explainer scenes --segment " + st.id + "`."
+                "Sprawdź scenę i uruchom `animatrix scenes --segment " + st.id + "`."
             )
         render.copy_output(wynik, cel)
         st.render_final = project.rel(cel)

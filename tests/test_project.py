@@ -1,7 +1,7 @@
 import pytest
 
-from explainer.models import ScriptMeta, Segment
-from explainer.project import Project, ProjectError, slugify
+from animatrix.models import ScriptMeta, Segment
+from animatrix.project import Project, ProjectError, slugify
 
 
 def test_slugify_usuwa_polskie_znaki():

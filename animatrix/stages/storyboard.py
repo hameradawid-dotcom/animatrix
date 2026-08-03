@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from explainer import prompts, render, ui
-from explainer.llm import LLM, LLMError
-from explainer.models import Script, Storyboard, StoryboardItem
-from explainer.project import Project
-from explainer.stages.common import (
+from animatrix import prompts, render, ui
+from animatrix.llm import LLM, LLMError
+from animatrix.models import Script, Storyboard, StoryboardItem
+from animatrix.project import Project
+from animatrix.stages.common import (
     dopisz_uwage,
     dostepne_assety,
     make_llm,
@@ -26,7 +26,7 @@ def _wymagaj_scenariusza(project: Project) -> Script:
     script = project.load_script()
     if not script.approved:
         raise RuntimeError(
-            "Etap 2 wymaga zaakceptowanego scenariusza. Uruchom najpierw `explainer script`."
+            "Etap 2 wymaga zaakceptowanego scenariusza. Uruchom najpierw `animatrix script`."
         )
     return script
 

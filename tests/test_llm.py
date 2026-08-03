@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from explainer.llm import LLM, LLMError, extract_code
+from animatrix.llm import LLM, LLMError, extract_code
 
 
 def test_extract_code_bierze_najdluzszy_blok():
@@ -60,10 +60,10 @@ def test_json_call_na_smieciach_rzuca(projekty, monkeypatch):
 
 
 def test_brak_klucza_rzuca(monkeypatch):
-    from explainer.config import settings
+    from animatrix.config import settings
 
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
-    monkeypatch.setattr("explainer.config._load_env", lambda: None)
+    monkeypatch.setattr("animatrix.config._load_env", lambda: None)
     settings.cache_clear()
     try:
         with pytest.raises(LLMError, match="ANTHROPIC_API_KEY"):

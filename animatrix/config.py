@@ -41,7 +41,7 @@ class Settings:
 @lru_cache(maxsize=1)
 def settings() -> Settings:
     _load_env()
-    projects = os.environ.get("EXPLAINER_PROJECTS_DIR", "projects")
+    projects = os.environ.get("ANIMATRIX_PROJECTS_DIR", "projects")
     projects_path = Path(projects)
     if not projects_path.is_absolute():
         projects_path = (Path.cwd() / projects_path).resolve()
@@ -52,8 +52,8 @@ def settings() -> Settings:
         elevenlabs_api_key=os.environ.get("ELEVENLABS_API_KEY") or None,
         elevenlabs_voice_id=os.environ.get("ELEVENLABS_VOICE_ID") or None,
         elevenlabs_model_id=os.environ.get("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"),
-        tts_provider=os.environ.get("EXPLAINER_TTS", "elevenlabs").strip().lower(),
-        silent_cps=float(os.environ.get("EXPLAINER_SILENT_CPS", "14.5")),
+        tts_provider=os.environ.get("ANIMATRIX_TTS", "elevenlabs").strip().lower(),
+        silent_cps=float(os.environ.get("ANIMATRIX_SILENT_CPS", "14.5")),
         projects_dir=projects_path,
     )
 

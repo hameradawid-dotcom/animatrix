@@ -7,8 +7,8 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel
 
-from explainer.config import settings
-from explainer.models import Costs, Scenes, Script, ScriptMeta, Storyboard
+from animatrix.config import settings
+from animatrix.models import Costs, Scenes, Script, ScriptMeta, Storyboard
 
 RUNTIME_DIR = Path(__file__).resolve().parent / "runtime"
 
@@ -131,7 +131,7 @@ class Project:
         if not root.exists():
             raise ProjectError(
                 f"Nie znaleziono projektu '{name}' w {settings().projects_dir}. "
-                "Użyj `explainer projects`, żeby zobaczyć listę."
+                "Użyj `animatrix projects`, żeby zobaczyć listę."
             )
         return cls(root)
 
@@ -159,7 +159,7 @@ class Project:
     def load_script(self) -> Script:
         s = _load(Script, self.script_path)
         if s is None:
-            raise ProjectError(f"Brak {self.script_path}. Uruchom `explainer new`.")
+            raise ProjectError(f"Brak {self.script_path}. Uruchom `animatrix new`.")
         return s
 
     def save_script(self, script: Script) -> None:

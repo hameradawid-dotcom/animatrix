@@ -1,4 +1,4 @@
-from explainer.models import Costs, Script, ScriptMeta, Segment, scene_class_name
+from animatrix.models import Costs, Script, ScriptMeta, Segment, scene_class_name
 
 
 def test_nazwa_klasy_sceny():

@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "manim-explainer"
+name = "animatrix"
 version = "0.1.0"
 description = "Trzyetapowa produkcja animowanych explainerów edukacyjnych (Manim + ElevenLabs + Claude)"
 requires-python = ">=3.11"
@@ -31,13 +31,13 @@ dev = [
 ]
 
 [project.scripts]
-explainer = "explainer.cli:main"
+animatrix = "animatrix.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["explainer*"]
+include = ["animatrix*"]
 
 [tool.setuptools.package-data]
-explainer = [
+animatrix = [
     "runtime/*.py",
     "demo/*.yaml",
     "demo/*.py",

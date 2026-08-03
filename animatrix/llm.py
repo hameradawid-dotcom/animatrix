@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 import anthropic
 
-from explainer.config import settings
+from animatrix.config import settings
 
 FENCE_RE = re.compile(r"```(?:python|py)?\s*\n(.*?)```", re.DOTALL)
 

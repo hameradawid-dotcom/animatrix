@@ -8,8 +8,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from explainer.config import settings
-from explainer.project import Project
+from animatrix.config import settings
+from animatrix.project import Project
 
 QUALITY_FLAG = {"l": "-ql", "m": "-qm", "h": "-qh", "k": "-qk"}
 
@@ -52,9 +52,9 @@ def subprocess_env(project: Project, *, voice: bool) -> dict[str, str]:
     existing = env.get("PYTHONPATH")
     env["PYTHONPATH"] = f"{project_root}{os.pathsep}{existing}" if existing else project_root
 
-    env["EXPLAINER_TTS"] = cfg.tts_provider if voice else "silent"
-    env["EXPLAINER_SILENT_CPS"] = str(cfg.silent_cps)
-    env["EXPLAINER_VOICE_CACHE"] = str(project.voice_cache_dir.resolve())
+    env["ANIMATRIX_TTS"] = cfg.tts_provider if voice else "silent"
+    env["ANIMATRIX_SILENT_CPS"] = str(cfg.silent_cps)
+    env["ANIMATRIX_VOICE_CACHE"] = str(project.voice_cache_dir.resolve())
 
     if cfg.elevenlabs_api_key:
         env["ELEVENLABS_API_KEY"] = cfg.elevenlabs_api_key

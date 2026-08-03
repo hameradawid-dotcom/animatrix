@@ -9,13 +9,13 @@ from typing import Optional
 
 import typer
 
-from explainer import __version__, ui
-from explainer.config import settings
-from explainer.models import ScriptMeta
-from explainer.project import Project, ProjectError
-from explainer.stages import scenes as stage_scenes
-from explainer.stages import script as stage_script
-from explainer.stages import storyboard as stage_storyboard
+from animatrix import __version__, ui
+from animatrix.config import settings
+from animatrix.models import ScriptMeta
+from animatrix.project import Project, ProjectError
+from animatrix.stages import scenes as stage_scenes
+from animatrix.stages import script as stage_script
+from animatrix.stages import storyboard as stage_storyboard
 
 app = typer.Typer(
     add_completion=False,
@@ -92,11 +92,11 @@ def doctor(
         problemy += 1
 
     if cfg.tts_provider == "silent":
-        ui.warn("EXPLAINER_TTS=silent — sceny dostaną ciszę zamiast lektora (zero kosztów).")
+        ui.warn("ANIMATRIX_TTS=silent — sceny dostaną ciszę zamiast lektora (zero kosztów).")
     elif cfg.has_elevenlabs:
         ui.ok(f"ElevenLabs skonfigurowany (model: {cfg.elevenlabs_model_id})")
     else:
-        ui.blad("ELEVENLABS_API_KEY / ELEVENLABS_VOICE_ID: brak — ustaw je albo EXPLAINER_TTS=silent")
+        ui.blad("ELEVENLABS_API_KEY / ELEVENLABS_VOICE_ID: brak — ustaw je albo ANIMATRIX_TTS=silent")
         problemy += 1
 
     ui.info(f"Katalog projektów: {cfg.projects_dir}")
@@ -113,7 +113,7 @@ def doctor(
 
 def _smoke_test() -> int:
     """Render testowej klatki z polskimi diakrytykami — sprawdza Pango i ścieżki."""
-    from explainer import render
+    from animatrix import render
 
     ui.naglowek("Test renderu (polskie znaki)")
     root = settings().projects_dir / "_smoke"
@@ -176,7 +176,7 @@ def new(
         raise typer.Exit(1)
 
     ui.ok(f"Projekt: {proj.root}")
-    ui.info("Następny krok: explainer script " + proj.name)
+    ui.info("Następny krok: animatrix script " + proj.name)
 
 
 @app.command()
@@ -216,7 +216,7 @@ def demo(
 
     ui.ok(f"Projekt demonstracyjny: {proj.root}")
     ui.warn("Dane w demie są ilustracyjne — nie publikuj bez podmiany dane.py.")
-    ui.info(f"Etapy 1 i 2 są zatwierdzone. Następny krok: explainer scenes {proj.name}")
+    ui.info(f"Etapy 1 i 2 są zatwierdzone. Następny krok: animatrix scenes {proj.name}")
 
 
 @app.command()
@@ -235,8 +235,8 @@ def script(
         )
         if potwierdz != "t":
             raise typer.Exit(0)
-        from explainer.models import Scenes, Storyboard
-        from explainer.stages.common import make_llm
+        from animatrix.models import Scenes, Storyboard
+        from animatrix.stages.common import make_llm
 
         proj.save_storyboard(Storyboard())
         proj.save_scenes(Scenes())
@@ -305,7 +305,7 @@ def status(nazwa: str = NAZWA) -> None:
     if wiersze:
         ui.console.print(ui.tabela_statusu(wiersze))
     else:
-        ui.warn("Brak segmentów — uruchom `explainer script`.")
+        ui.warn("Brak segmentów — uruchom `animatrix script`.")
 
     znaki = stage_script.suma_znakow(skrypt)
     ui.console.print()
@@ -365,7 +365,7 @@ def assets_map_pl(
     szerokosc: int = typer.Option(1000, "--szerokosc"),
 ) -> None:
     """Buduje assets/poland.svg + poland.json (nazwy regionów w kolejności ścieżek)."""
-    from explainer.assets.maps import MapError, generuj_svg
+    from animatrix.assets.maps import MapError, generuj_svg
 
     proj = _otworz(nazwa)
     cel = proj.root / wyjscie
@@ -381,7 +381,7 @@ def assets_map_pl(
 @app.command()
 def version() -> None:
     """Wersja narzędzia."""
-    ui.console.print(f"manim-explainer {__version__}")
+    ui.console.print(f"animatrix {__version__}")
 
 
 def main() -> None:

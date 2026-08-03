@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from explainer.llm import LLM
-from explainer.models import Uwaga
-from explainer.project import Project
+from animatrix.llm import LLM
+from animatrix.models import Uwaga
+from animatrix.project import Project
 
 
 def make_llm(project: Project) -> LLM:

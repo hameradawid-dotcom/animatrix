@@ -1,7 +1,7 @@
 """Wybór silnika mowy dla scen.
 
 Sceny wołają `speech_service()` i nie wiedzą, czy pod spodem jest ElevenLabs
-czy cisza. Przełącznik: zmienna środowiskowa EXPLAINER_TTS (elevenlabs|silent).
+czy cisza. Przełącznik: zmienna środowiskowa ANIMATRIX_TTS (elevenlabs|silent).
 
 Cache audio jest wspólny dla całego projektu (`.cache/voiceover/`), a kluczem
 jest hash tekstu + konfiguracji głosu. Dzięki temu poprawka jednej sceny nie
@@ -69,7 +69,7 @@ class SilentService(SpeechService):
 
 
 def _cache_dir() -> str:
-    return os.environ.get("EXPLAINER_VOICE_CACHE", DOMYSLNY_CACHE)
+    return os.environ.get("ANIMATRIX_VOICE_CACHE", DOMYSLNY_CACHE)
 
 
 def speech_service(cache_dir: str | None = None) -> SpeechService:
@@ -80,17 +80,17 @@ def speech_service(cache_dir: str | None = None) -> SpeechService:
     katalog = cache_dir or _cache_dir()
     Path(katalog).mkdir(parents=True, exist_ok=True)
 
-    provider = os.environ.get("EXPLAINER_TTS", "elevenlabs").strip().lower()
+    provider = os.environ.get("ANIMATRIX_TTS", "elevenlabs").strip().lower()
     if provider == "silent":
         return SilentService(
-            znaki_na_sekunde=float(os.environ.get("EXPLAINER_SILENT_CPS", "14.5")),
+            znaki_na_sekunde=float(os.environ.get("ANIMATRIX_SILENT_CPS", "14.5")),
             cache_dir=katalog,
         )
 
     klucz = os.environ.get("ELEVENLABS_API_KEY") or os.environ.get("ELEVEN_API_KEY")
     if not klucz:
         raise RuntimeError(
-            "Brak ELEVENLABS_API_KEY. Ustaw klucz w .env albo przełącz EXPLAINER_TTS=silent."
+            "Brak ELEVENLABS_API_KEY. Ustaw klucz w .env albo przełącz ANIMATRIX_TTS=silent."
         )
     # manim-voiceover i biblioteka elevenlabs czytają wyłącznie ELEVEN_API_KEY.
     os.environ["ELEVEN_API_KEY"] = klucz

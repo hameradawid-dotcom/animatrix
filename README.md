@@ -1,4 +1,4 @@
-# manim-explainer
+# animatrix
 
 Lokalne narzędzie CLI do produkcji animowanych explainerów edukacyjnych po polsku.
 Prowadzi przez trzy etapy z bramkami akceptacji: **scenariusz → storyboard → sceny**.
@@ -46,13 +46,13 @@ brew install --cask mactex-no-gui                              # opcjonalnie
 ```
 
 ```bash
-git clone <repo> && cd manim-explainer
+git clone <repo> && cd animatrix
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 pip install -e .
 
 cp .env.example .env    # uzupełnij klucze
-explainer doctor --smoke
+animatrix doctor --smoke
 ```
 
 `doctor --smoke` renderuje testową klatkę z polskimi diakrytykami — jeśli
@@ -63,25 +63,25 @@ przejdzie, środowisko jest gotowe.
 ## Szybki start bez kluczy API
 
 ```bash
-explainer demo moj-test          # gotowy projekt: mapa Polski, licznik, wykres, cząsteczka
-explainer scenes moj-test        # render roboczy + bramka akceptacji
-explainer render-final moj-test  # 1080p + scalenie
+animatrix demo moj-test          # gotowy projekt: mapa Polski, licznik, wykres, cząsteczka
+animatrix scenes moj-test        # render roboczy + bramka akceptacji
+animatrix render-final moj-test  # 1080p + scalenie
 ```
 
 Demo nie wysyła ani jednego zapytania do Anthropic i ani jednego znaku do
-ElevenLabs (ustaw `EXPLAINER_TTS=silent`). **Liczby w demie są ilustracyjne.**
+ElevenLabs (ustaw `ANIMATRIX_TTS=silent`). **Liczby w demie są ilustracyjne.**
 
 ---
 
 ## Prawdziwy projekt
 
 ```bash
-explainer new duzy-rocznik
-explainer script duzy-rocznik        # etap 1 + bramka
-explainer storyboard duzy-rocznik    # etap 2 + klatki podglądowe + bramka
-explainer scenes duzy-rocznik        # etap 3 + samonaprawa + bramka
-explainer render-final duzy-rocznik  # 1080p (--4k dla 2160p)
-explainer status duzy-rocznik        # tabela stanu + koszty
+animatrix new duzy-rocznik
+animatrix script duzy-rocznik        # etap 1 + bramka
+animatrix storyboard duzy-rocznik    # etap 2 + klatki podglądowe + bramka
+animatrix scenes duzy-rocznik        # etap 3 + samonaprawa + bramka
+animatrix render-final duzy-rocznik  # 1080p (--4k dla 2160p)
+animatrix status duzy-rocznik        # tabela stanu + koszty
 ```
 
 Możesz zamknąć narzędzie w dowolnym momencie — cały stan siedzi w plikach YAML
@@ -107,7 +107,7 @@ odrzuciłeś.
 Wracasz do jednego segmentu flagą `--segment`:
 
 ```bash
-explainer scenes duzy-rocznik --segment s03
+animatrix scenes duzy-rocznik --segment s03
 ```
 
 ---
@@ -162,7 +162,7 @@ Zasada jest wpisana w prompt systemowy generatora scen, więc model jej pilnuje.
 
 ## Koszty
 
-`explainer status` pokazuje licznik znaków wysłanych do ElevenLabs — osobno
+`animatrix status` pokazuje licznik znaków wysłanych do ElevenLabs — osobno
 dla bieżącej wersji scenariusza i osobno dla wersji odrzuconych.
 
 Trzy rzeczy trzymają rachunek nisko:
@@ -171,7 +171,7 @@ Trzy rzeczy trzymają rachunek nisko:
    Rerender sceny po poprawce wizualnej nie kosztuje ani jednego znaku, bo
    narracja się nie zmieniła (prompt zabrania modelowi ruszać stałej `NARRACJA`).
 2. **Klatki podglądowe z etapu 2 renderują się bez audio.**
-3. **`EXPLAINER_TTS=silent`** — cisza o długości oszacowanej z tempa mowy.
+3. **`ANIMATRIX_TTS=silent`** — cisza o długości oszacowanej z tempa mowy.
    `tracker.duration` działa normalnie, więc timing animacji jest realistyczny,
    a rachunek zerowy. Dobre do dopracowywania warstwy wizualnej.
 
@@ -180,7 +180,7 @@ Trzy rzeczy trzymają rachunek nisko:
 ## Mapy z danymi
 
 ```bash
-explainer assets map-pl moj-projekt \
+animatrix assets map-pl moj-projekt \
   --zrodlo wojewodztwa.geojson \
   --kolumna nazwa
 ```
@@ -220,8 +220,8 @@ Wszystko w `.env` (patrz `.env.example`):
 | `ELEVENLABS_API_KEY` | — | lektor |
 | `ELEVENLABS_VOICE_ID` | — | ID głosu z panelu ElevenLabs |
 | `ELEVENLABS_MODEL_ID` | `eleven_multilingual_v2` | polski czyta poprawnie |
-| `EXPLAINER_TTS` | `elevenlabs` | `silent` = zero kosztów |
-| `EXPLAINER_PROJECTS_DIR` | `projects` | gdzie trzymać projekty |
+| `ANIMATRIX_TTS` | `elevenlabs` | `silent` = zero kosztów |
+| `ANIMATRIX_PROJECTS_DIR` | `projects` | gdzie trzymać projekty |
 
 ---
 

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from explainer.assets.maps import MapError, slug
+from animatrix.assets.maps import MapError, slug
 
 gpd = pytest.importorskip("geopandas")
 
@@ -35,7 +35,7 @@ def test_slug_normalizuje_polskie_znaki():
 
 
 def test_generuje_svg_i_sidecar(tmp_path):
-    from explainer.assets.maps import generuj_svg
+    from animatrix.assets.maps import generuj_svg
 
     zrodlo = tmp_path / "w.geojson"
     zrodlo.write_text(json.dumps(GEOJSON), encoding="utf-8")
@@ -54,7 +54,7 @@ def test_generuje_svg_i_sidecar(tmp_path):
 
 
 def test_zla_kolumna_daje_czytelny_blad(tmp_path):
-    from explainer.assets.maps import generuj_svg
+    from animatrix.assets.maps import generuj_svg
 
     zrodlo = tmp_path / "w.geojson"
     zrodlo.write_text(json.dumps(GEOJSON), encoding="utf-8")

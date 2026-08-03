@@ -9,11 +9,11 @@ from __future__ import annotations
 
 import pytest
 
-from explainer.models import ScriptMeta
-from explainer.project import Project
-from explainer.stages import scenes as stage_scenes
-from explainer.stages import script as stage_script
-from explainer.stages import storyboard as stage_storyboard
+from animatrix.models import ScriptMeta
+from animatrix.project import Project
+from animatrix.stages import scenes as stage_scenes
+from animatrix.stages import script as stage_script
+from animatrix.stages import storyboard as stage_storyboard
 
 pytest.importorskip("manim")
 pytest.importorskip("manim_voiceover")

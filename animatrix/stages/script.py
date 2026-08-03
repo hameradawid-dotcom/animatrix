@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from explainer import prompts, ui
-from explainer.llm import LLM, LLMError
-from explainer.models import Script, Segment
-from explainer.project import Project
-from explainer.stages.common import dopisz_uwage, make_llm, segment_id, teksty_uwag
+from animatrix import prompts, ui
+from animatrix.llm import LLM, LLMError
+from animatrix.models import Script, Segment
+from animatrix.project import Project
+from animatrix.stages.common import dopisz_uwage, make_llm, segment_id, teksty_uwag
 
 ETAP = "script"
 

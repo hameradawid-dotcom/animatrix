@@ -19,7 +19,7 @@ Pokrywa cztery typy wizualizacji z założeń narzędzia:
 
 ## Pochodzenie assetów
 
-`assets/poland.svg` wygenerowano komendą `explainer assets map-pl` z warstwy
+`assets/poland.svg` wygenerowano komendą `animatrix assets map-pl` z warstwy
 granic województw z repozytorium [ppatrzyk/polska-geojson]
 (https://github.com/ppatrzyk/polska-geojson) (`wojewodztwa-medium.geojson`,
 uproszczenie 1500 m). Sprawdź licencję źródła, zanim użyjesz mapy komercyjnie.
@@ -29,15 +29,15 @@ uproszczenie 1500 m). Sprawdź licencję źródła, zanim użyjesz mapy komercyj
 ## Jak uruchomić
 
 ```bash
-explainer demo moj-test          # tworzy projekt z gotowym scenariuszem i scenami
-explainer scenes moj-test        # render roboczy + bramka akceptacji
-explainer render-final moj-test  # 1080p + scalenie w output/final.mp4
+animatrix demo moj-test          # tworzy projekt z gotowym scenariuszem i scenami
+animatrix scenes moj-test        # render roboczy + bramka akceptacji
+animatrix render-final moj-test  # 1080p + scalenie w output/final.mp4
 ```
 
 Etapy 1 i 2 są już zatwierdzone — demo zaczyna się od etapu 3, żeby nie wymagać
 klucza do modelu. Sceny nadal przechodzą przez bramkę akceptacji, tak jak
 w normalnym projekcie.
 
-Bez klucza ElevenLabs ustaw `EXPLAINER_TTS=silent` w `.env` — sceny dostaną
+Bez klucza ElevenLabs ustaw `ANIMATRIX_TTS=silent` w `.env` — sceny dostaną
 ciszę o długości oszacowanej z tempa mowy, więc timing animacji będzie
 realistyczny.

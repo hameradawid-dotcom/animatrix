@@ -3,8 +3,8 @@
 Importowany przez KAŻDĄ scenę (`from theme import *`). Zmiana koloru albo fontu
 tutaj propaguje się na wszystkie sceny bez dotykania ich kodu.
 
-Ten plik należy do projektu — możesz go edytować. `explainer` nie nadpisze go
-przy kolejnych uruchomieniach (chyba że wywołasz `explainer sync-runtime --force`).
+Ten plik należy do projektu — możesz go edytować. `animatrix` nie nadpisze go
+przy kolejnych uruchomieniach (chyba że wywołasz `animatrix sync-runtime --force`).
 """
 
 from __future__ import annotations
@@ -194,7 +194,7 @@ def osie(
 
 
 def svg(sciezka: str, **kw) -> SVGMobject:
-    """Mapa / ikona z pliku SVG (np. wygenerowana przez `explainer assets map-pl`)."""
+    """Mapa / ikona z pliku SVG (np. wygenerowana przez `animatrix assets map-pl`)."""
     kw.setdefault("stroke_color", MUTED)
     kw.setdefault("stroke_width", 1.2)
     kw.setdefault("fill_color", GRID)
@@ -207,7 +207,7 @@ def svg_regiony(sciezka_svg: str) -> tuple[SVGMobject, dict[str, VMobject]]:
 
     Manim nie zachowuje atrybutów `id` z SVG, więc nazwy biorą się z sidecar-owego
     JSON-a o tej samej nazwie (`assets/poland.json`), gdzie kolejność wpisów
-    odpowiada kolejności ścieżek w SVG. Oba pliki generuje `explainer assets map-pl`.
+    odpowiada kolejności ścieżek w SVG. Oba pliki generuje `animatrix assets map-pl`.
     """
     import json
     from pathlib import Path as _Path
