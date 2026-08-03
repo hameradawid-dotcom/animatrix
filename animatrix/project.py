@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import os
 import re
 import shutil
+import time
 from pathlib import Path
 
 import yaml
@@ -218,8 +220,75 @@ class Project:
     def save_costs(self, c: Costs) -> None:
         _dump(c, self.costs_path)
 
+    # --- blokada zapisu ---
+    def blokada(self, *, timeout: float = 10.0):
+        """Wyłączność na zapis do projektu.
+
+        CLI pracował jednowątkowo, więc problemu nie było. Interfejs potrafi
+        wysłać dwa żądania naraz — bez blokady drugie nadpisałoby YAML-a
+        wczytanego przed pierwszym.
+        """
+        return _Blokada(self.root / ".animatrix.lock", timeout)
+
     def rel(self, path: Path) -> str:
         try:
             return str(path.relative_to(self.root))
         except ValueError:
             return str(path)
+
+
+class BlokadaZajeta(ProjectError):
+    pass
+
+
+class _Blokada:
+    """Blokada pliku oparta o `O_EXCL` — działa też między procesami.
+
+    Trzymamy PID, żeby po zabitym procesie dało się odróżnić blokadę żywą od
+    osieroconej; osierocona jest przejmowana, a nie czeka w nieskończoność.
+    """
+
+    def __init__(self, sciezka: Path, timeout: float):
+        self.sciezka = sciezka
+        self.timeout = timeout
+        self._trzymam = False
+
+    def _zywy(self) -> bool:
+        try:
+            pid = int(self.sciezka.read_text(encoding="utf-8").strip())
+        except (OSError, ValueError):
+            return False
+        if pid == os.getpid():
+            return True
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
+
+    def __enter__(self) -> "_Blokada":
+        koniec = time.monotonic() + self.timeout
+        while True:
+            try:
+                self.sciezka.parent.mkdir(parents=True, exist_ok=True)
+                fd = os.open(self.sciezka, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                os.write(fd, str(os.getpid()).encode())
+                os.close(fd)
+                self._trzymam = True
+                return self
+            except FileExistsError:
+                if not self._zywy():
+                    self.sciezka.unlink(missing_ok=True)
+                    continue
+                if time.monotonic() >= koniec:
+                    raise BlokadaZajeta(
+                        f"Projekt {self.sciezka.parent.name} jest zajęty przez inną operację."
+                    )
+                time.sleep(0.05)
+
+    def __exit__(self, *_) -> None:
+        if self._trzymam:
+            self.sciezka.unlink(missing_ok=True)
+            self._trzymam = False

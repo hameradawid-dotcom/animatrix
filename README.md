@@ -136,6 +136,32 @@ projects/duzy-rocznik/
 
 ---
 
+## Interfejs
+
+```bash
+animatrix ui          # http://localhost:8760
+```
+
+Trzy kolumny: lista segmentów, podgląd kadru, edytor sceny.
+
+- **Nakładka stref bezpiecznych** na podglądzie — na czerwono to, co zasłoni
+  interfejs TikToka albo Instagrama. Ramka trzyma proporcje wybranego formatu,
+  więc widać kompozycję jeszcze zanim cokolwiek się wyrenderuje.
+- **Wklej scenariusz** — wklejasz tekst z Claude/GPT, narzędzie tnie go na
+  segmenty (deterministycznie, bez modelu), a Ty poprawiasz podział przed zapisem.
+- **Szablon + parametry** per scena, z przykładem do wstawienia jednym kliknięciem
+  i walidacją układu na żądanie.
+- **Render z paskiem postępu i przyciskiem anulowania.** Render idzie w tle,
+  postęp leci przez SSE, anulowanie zabija całą grupę procesów (Manim odpala
+  ffmpeg, więc zabicie samego rodzica zostawiłoby sierotę).
+- Zmiana formatu albo motywu w górnym pasku **nie rusza scen** — oznacza tylko
+  istniejące rendery jako nieaktualne.
+
+Serwer jest lokalny, bez logowania — nie wystawiaj go publicznie. Wymaga
+`pip install "animatrix[ui]"`.
+
+---
+
 ## Sceny ze szablonów
 
 Scena nie musi być plikiem Pythona. Może być specem — `sceny/s01.yaml`:

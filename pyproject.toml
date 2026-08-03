@@ -26,8 +26,13 @@ maps = [
     "geopandas>=1.0",
     "shapely>=2.0",
 ]
+ui = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+]
 dev = [
     "pytest>=8",
+    "httpx>=0.27",
 ]
 
 [project.scripts]
@@ -44,6 +49,7 @@ animatrix = [
     "demo/*.md",
     "demo/scenes/*.py",
     "demo/assets/*",
+    "web/*",
 ]
 
 [tool.pytest.ini_options]

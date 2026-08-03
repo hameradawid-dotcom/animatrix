@@ -4,6 +4,7 @@ segmenty:
   plik: scenes/s01.py
   spec: sceny/s01.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -14,8 +15,9 @@ segmenty:
   klasa: Scena_S02
   plik: scenes/s02.py
   spec: sceny/s02.yaml
-  hash_renderu: null
-  status: approved
+  hash_renderu: a5cd999d261a4dd3
+  takty: null
+  status: rendered
   proby_naprawy: 0
   ostatni_blad: null
   render_roboczy: renders/draft/s02.mp4
@@ -26,6 +28,7 @@ segmenty:
   plik: scenes/s03.py
   spec: sceny/s03.yaml
   hash_renderu: null
+  takty: 4
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -37,6 +40,7 @@ segmenty:
   plik: scenes/s04.py
   spec: sceny/s04.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -48,6 +52,7 @@ segmenty:
   plik: scenes/s05.py
   spec: sceny/s05.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -59,6 +64,7 @@ segmenty:
   plik: scenes/s06.py
   spec: sceny/s06.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -70,6 +76,7 @@ segmenty:
   plik: scenes/s07.py
   spec: sceny/s07.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -81,6 +88,7 @@ segmenty:
   plik: scenes/s08.py
   spec: sceny/s08.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -92,6 +100,7 @@ segmenty:
   plik: scenes/s09.py
   spec: sceny/s09.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -103,6 +112,7 @@ segmenty:
   plik: scenes/s10.py
   spec: sceny/s10.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -114,6 +124,7 @@ segmenty:
   plik: scenes/s11.py
   spec: sceny/s11.yaml
   hash_renderu: null
+  takty: null
   status: approved
   proby_naprawy: 0
   ostatni_blad: null
@@ -125,6 +136,7 @@ segmenty:
   plik: scenes/s12.py
   spec: sceny/s12.yaml
   hash_renderu: null
+  takty: 4
   status: approved
   proby_naprawy: 0
   ostatni_blad: null

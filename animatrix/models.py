@@ -94,6 +94,9 @@ class SceneState(BaseModel):
     # Odcisk specu z chwili ostatniego renderu — po nim widać, że podgląd
     # jest nieaktualny, zamiast zgadywać po dacie pliku.
     hash_renderu: str | None = None
+    # Liczba taktów zmierzona sondą. Manim raportuje „animacja N", ale nie
+    # mówi, ile ich jest — bez tego pasek postępu nie ma z czego liczyć.
+    takty: int | None = None
     status: SceneStatus = "pending"
     proby_naprawy: int = 0
     ostatni_blad: str | None = None

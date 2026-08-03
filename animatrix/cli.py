@@ -489,6 +489,31 @@ def assets_map_pl(
     ui.ok(f"Regiony: {meta_path}")
 
 
+@app.command("ui")
+def interfejs(
+    port: int = typer.Option(8760, "--port"),
+    host: str = typer.Option("127.0.0.1", "--host", help="Zostaw localhost — brak logowania."),
+    otworz: bool = typer.Option(True, "--otworz/--bez-otwierania"),
+) -> None:
+    """Interfejs w przeglądarce: edycja scen, podgląd, render z paskiem postępu."""
+    try:
+        from animatrix.serwer import uruchom
+    except ImportError as exc:
+        ui.blad("Brakuje zależności interfejsu. Zainstaluj: pip install 'animatrix[ui]'")
+        ui.console.print(f"[dim]{exc}[/dim]")
+        raise typer.Exit(1)
+
+    adres = f"http://{host}:{port}"
+    ui.ok(f"Interfejs: {adres}")
+    ui.info("Zatrzymaj przez Ctrl+C.")
+    if otworz:
+        import threading
+        import webbrowser
+
+        threading.Timer(1.0, lambda: webbrowser.open(adres)).start()
+    uruchom(host=host, port=port)
+
+
 @app.command()
 def version() -> None:
     """Wersja narzędzia."""
