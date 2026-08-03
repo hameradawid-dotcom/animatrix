@@ -32,17 +32,19 @@ rerenderu pozostałych.
 
 ## Instalacja
 
-Wymagane w systemie: **Python 3.11+**, **ffmpeg**, opcjonalnie **LaTeX**
-(`latex` + `dvisvgm`) jeśli chcesz wzorów przez `MathTex`.
+Wymagane w systemie: **Python 3.11+**, **ffmpeg**, **LaTeX** (`latex` + `dvisvgm`).
+
+LaTeX nie jest opcjonalny: animowane liczby idą przez `DecimalNumber`, a ten
+składa cyfry `MathTex`-em. Bez LaTeXa wysypie się każda scena z licznikiem.
 
 ```bash
 # Ubuntu / Debian
 sudo apt install ffmpeg libpango1.0-dev
-sudo apt install texlive-latex-extra texlive-science dvisvgm   # opcjonalnie, do wzorów
+sudo apt install texlive-latex-extra texlive-science dvisvgm
 
 # macOS
 brew install ffmpeg pango
-brew install --cask mactex-no-gui                              # opcjonalnie
+brew install --cask mactex-no-gui
 ```
 
 ```bash
