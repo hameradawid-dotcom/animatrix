@@ -134,16 +134,44 @@ projects/duzy-rocznik/
 
 ---
 
+## Motywy
+
+Stylistykę wybierasz przy zakładaniu projektu i możesz ją zmienić później.
+Sceny wołają te same helpery — o wygląd dba `motyw.py`.
+
+| motyw | wygląd | do czego |
+|---|---|---|
+| `kh` *(domyślny)* | kremowe tło `#FFFBF5`, fioletowy akcent `#5B21B6`, Space Grotesk + Inter | materiały korepetytorhamera.pl — film wygląda jak przedłużenie strony |
+| `misja` | prawie czarne tło, monospace w etykietach, narożniki celownika, sekcje „// ZADANIE 01" | briefing operacyjny: przedstawienie zadania, analiza sytuacji, wniosek |
+| `ciemny` | ciemne tło, estetyka 3Blue1Brown | materiały niezwiązane z marką |
+
+```bash
+animatrix new maturzysci --motyw misja
+animatrix sync-runtime maturzysci --motyw kh   # zmiana stylistyki istniejącego projektu
+```
+
+Motyw wchodzi też do promptu generatora storyboardu i kodu scen, więc model od
+razu proponuje kadry pasujące do stylistyki, zamiast przemalowywać gotowe.
+
+Fonty marki muszą być zainstalowane w systemie: `Space Grotesk` i `Inter`
+(Ubuntu: `apt install fonts-inter fonts-space-grotesk-ttf`; macOS: pobierz
+z Google Fonts i zainstaluj przez Font Book).
+
+> `misja` podnosi firmowy fiolet z `#5B21B6` na `#7C3AED` — oryginał na prawie
+> czarnym tle schodzi poniżej progu czytelności. To jedyne odstępstwo od palety
+> marki.
+
 ## Zasady wizualne
 
 Wbudowane w prompt generatora storyboardu i kodu scen:
 
-- ciemne tło, czysta wektorowa estetyka w stylu 3Blue1Brown
 - maksymalnie **jedna** główna idea wizualna na segment
 - liczby zawsze animowane (`ValueTracker` + `DecimalNumber`), nigdy statyczne
 - mapy Polski jako SVG z podziałem na województwa, kolorowane danymi
 - wzory przez `MathTex` albo manim-chemistry — nigdy jako obrazek
-- paleta i fonty wyłącznie z `theme.py`
+- paleta, fonty i odstępy wyłącznie z motywu; `sp()` rzuca wyjątkiem przy
+  odstępie spoza skali 4/8/12/16/24/32/48/64/96/128 px
+- brak gradientów, cieni, poświat i emoji
 
 ### Polskie znaki
 

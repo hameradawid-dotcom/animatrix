@@ -11,8 +11,13 @@ from animatrix.config import settings
 from animatrix.models import Costs, Scenes, Script, ScriptMeta, Storyboard
 
 RUNTIME_DIR = Path(__file__).resolve().parent / "runtime"
+DOMYSLNY_MOTYW = "kh"
 
 SLUG_RE = re.compile(r"[^a-z0-9\-]+")
+
+
+def dostepne_motywy() -> list[str]:
+    return sorted(p.stem.removeprefix("motyw_") for p in RUNTIME_DIR.glob("motyw_*.py"))
 
 
 def slugify(name: str) -> str:
@@ -120,7 +125,7 @@ class Project:
             proj.voice_cache_dir,
         ):
             d.mkdir(parents=True, exist_ok=True)
-        proj.install_runtime()
+        proj.install_runtime(meta.motyw)
         proj.save_script(Script(meta=meta))
         proj.save_costs(Costs())
         return proj
@@ -142,17 +147,31 @@ class Project:
             return []
         return sorted(p.name for p in base.iterdir() if (p / "script.yaml").exists())
 
-    def install_runtime(self, force: bool = False) -> list[str]:
-        """Kopiuje theme.py i voice.py do projektu. theme.py jest własnością użytkownika —
-        nie nadpisujemy go bez --force."""
+    def install_runtime(self, motyw: str = DOMYSLNY_MOTYW, force: bool = False) -> list[str]:
+        """Kopiuje theme.py, voice.py i wybrany motyw do projektu.
+
+        Pliki są własnością użytkownika — nie nadpisujemy ich bez --force.
+        `motyw_<nazwa>.py` ląduje jako `motyw.py`, żeby sceny miały jeden
+        stabilny import niezależnie od wybranej stylistyki.
+        """
+        if motyw not in dostepne_motywy():
+            raise ProjectError(
+                f"Nie znam motywu '{motyw}'. Dostępne: {', '.join(dostepne_motywy())}"
+            )
+
+        self.root.mkdir(parents=True, exist_ok=True)
+        pary = [
+            (RUNTIME_DIR / "theme.py", "theme.py"),
+            (RUNTIME_DIR / "voice.py", "voice.py"),
+            (RUNTIME_DIR / f"motyw_{motyw}.py", "motyw.py"),
+        ]
         written: list[str] = []
-        for src in sorted(RUNTIME_DIR.glob("*.py")):
-            dst = self.root / src.name
+        for src, nazwa in pary:
+            dst = self.root / nazwa
             if dst.exists() and not force:
                 continue
-            self.root.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(src, dst)
-            written.append(src.name)
+            written.append(nazwa)
         return written
 
     # --- stan ---

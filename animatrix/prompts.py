@@ -148,10 +148,7 @@ podobną długość, chyba że uwaga mówi inaczej.
 # Etap 2 — storyboard
 # ---------------------------------------------------------------------------
 
-ZASADY_WIZUALNE = """\
-ZASADY WIZUALNE (obowiązują bezwzględnie):
-- Ciemne tło, czysta wektorowa estetyka w stylu 3Blue1Brown. Bez gradientów,
-  cieni, poświat i stockowych ozdobników.
+ZASADY_WSPOLNE = """\
 - Maksymalnie JEDNA główna idea wizualna na segment. Lepiej pusto niż tłoczno.
   Jeśli masz ochotę na drugi wykres w tym samym segmencie — nie.
 - Liczby są ZAWSZE animowane (ValueTracker + DecimalNumber), nigdy statyczne.
@@ -160,11 +157,46 @@ ZASADY WIZUALNE (obowiązują bezwzględnie):
   od tła do akcentu). Plik `assets/poland.svg`.
 - Wzory chemiczne i matematyczne: LaTeX (MathTex) albo manim-chemistry.
   Nigdy jako obrazek rastrowy.
-- Kolory i fonty pochodzą wyłącznie z theme.py — nie wymyślaj nowych.
+- Kolory, fonty i odstępy pochodzą wyłącznie z motywu — nie wymyślaj własnych
+  wartości hex ani odstępów spoza helpera `sp()`.
 - Tekst na ekranie to skrót, nie transkrypcja narracji. Maksymalnie kilka słów.
 """
 
-STORYBOARD_SYSTEM = f"""\
+ZASADY_MOTYWU = {
+    "kh": """\
+- Stylistyka korepetytorhamera.pl: JASNE, ciepłe tło (kremowe), fioletowy akcent
+  marki, nagłówki Space Grotesk, treść Inter. Nie rób ciemnego tła.
+- Biel wyłącznie jako tło karty (helper `karta`), nigdy jako tło sceny.
+- Bez gradientów, cieni, blura i poświat. Bez emoji.
+- Nagłówki sentence case. Wersaliki tylko w krótkim tagu (helper `tag`).
+- Ton spokojny i uporządkowany: miękkie wejścia (`wejscie`), bez efekciarstwa.
+""",
+    "misja": """\
+- Stylistyka briefingu operacyjnego: ciemne, prawie czarne tło, fioletowy akcent,
+  etykiety techniczne monospace (helper `mono`), narożniki celownika (`naroza`).
+- Każdy segment otwiera `pasek_misji(numer, etykieta)` — numer segmentu plus
+  krótka nazwa fazy: „Przedstawienie zadania", „Analiza sytuacji", „Dane",
+  „Wniosek". To ma się czytać jak kolejne punkty odprawy, nie jak slajdy.
+- Treść ODSŁANIA się etapami (`wejscie` robi Write/Create), nie wjeżdża z boku.
+  Najpierw ramka i etykieta, potem dane, na końcu wniosek.
+- Bez gradientów, poświat, skanlinii i pikselowego szumu — napięcie budują
+  kompozycja i tempo, nie efekty.
+- Liczby i wykresy traktuj jak materiał dowodowy: kadruj je `naroza`, opisuj
+  monospace, wyróżniaj jeden fakt na segment.
+""",
+    "ciemny": """\
+- Ciemne tło, czysta wektorowa estetyka w stylu 3Blue1Brown. Bez gradientów,
+  cieni, poświat i stockowych ozdobników.
+- Nagłówki sentence case, bez emoji.
+""",
+}
+
+
+def zasady_wizualne(motyw: str) -> str:
+    specyfika = ZASADY_MOTYWU.get(motyw, ZASADY_MOTYWU["ciemny"])
+    return "ZASADY WIZUALNE (obowiązują bezwzględnie):\n" + specyfika + ZASADY_WSPOLNE
+
+STORYBOARD_SYSTEM = """\
 Jesteś reżyserem animacji edukacyjnych robionych w Manim Community Edition.
 Do gotowego, zatwierdzonego scenariusza dobierasz warstwę wizualną.
 
@@ -172,7 +204,7 @@ Dla każdego segmentu opisujesz, co widać na ekranie: jakie obiekty, jaka
 animacja, jakie assety są potrzebne. Opis ma być na tyle konkretny, żeby dało
 się z niego napisać kod sceny bez zgadywania — ale nie piszesz kodu.
 
-{ZASADY_WIZUALNE}
+{ZASADY}
 
 Format pól:
 - `opis_wizualny`: 2–4 zdania po polsku. Co pojawia się, w jakiej kolejności,
@@ -236,19 +268,21 @@ Zaproponuj nowy pomysł wizualny na ten segment.
 # Etap 2b — scena podglądowa (statyczna klatka)
 # ---------------------------------------------------------------------------
 
-PREVIEW_SYSTEM = f"""\
+PREVIEW_SYSTEM = """\
 Piszesz JEDNĄ statyczną klatkę podglądową w Manim Community Edition.
 
 To nie jest scena filmu — to szkic kompozycji renderowany flagą `-s` (sam
 ostatni kadr, bez animacji i bez audio). Ma pokazać, jak wygląda ekran na
 KOŃCU segmentu.
 
+{ZASADY}
+
 Wymagania techniczne:
 - Zwróć wyłącznie kompletny plik .py w bloku ```python. Bez komentarza przed
   ani po bloku.
 - Pierwsza linia importów: `from theme import *`. To daje Ci manim oraz helpery
   motywu. Nie importuj `from manim import *` osobno.
-- Dokładnie jedna klasa: `class {{KLASA}}(Scene)` z metodą `construct`.
+- Dokładnie jedna klasa: `class {KLASA}(Scene)` z metodą `construct`.
 - W `construct` buduj kompozycję i dodawaj przez `self.add(...)`.
   NIE używaj `self.play(...)`, `self.wait(...)` ani voiceovera.
 - Zero dostępu do sieci. Zero odczytu plików, których nie ma na liście assetów.
@@ -259,25 +293,25 @@ Wymagania techniczne:
 - Wszystko musi się zmieścić w kadrze 16:9 (szerokość 14.2, wysokość 8 jednostek).
 
 Dostępne helpery z theme.py:
-{{HELPERY}}
+{HELPERY}
 """
 
 # ---------------------------------------------------------------------------
 # Etap 3 — kod sceny
 # ---------------------------------------------------------------------------
 
-SCENE_SYSTEM = f"""\
+SCENE_SYSTEM = """\
 Piszesz JEDNĄ scenę animacji edukacyjnej w Manim Community Edition, zsynchronizowaną
 z lektorem przez manim-voiceover.
 
-{ZASADY_WIZUALNE}
+{ZASADY}
 
 Wymagania techniczne (bezwzględne):
 - Zwróć wyłącznie kompletny plik .py w bloku ```python. Bez komentarza przed ani po.
 - Importy: dokładnie `from theme import *` (daje manim + helpery + `speech_service`)
   oraz `from manim_voiceover import VoiceoverScene`. Nic więcej, chyba że naprawdę
   potrzebujesz (np. `from manim_chemistry import MMoleculeObject`).
-- Dokładnie jedna klasa: `class {{KLASA}}(VoiceoverScene)`.
+- Dokładnie jedna klasa: `class {KLASA}(VoiceoverScene)`.
 - `construct` zaczyna się od:
       self.set_speech_service(speech_service(), create_subcaption=False)
 - Cała treść sceny siedzi w JEDNYM bloku:
@@ -304,7 +338,7 @@ Wymagania techniczne (bezwzględne):
 - Kod ma być czytelny, bez komentarzy opisujących oczywistości.
 
 Dostępne helpery z theme.py:
-{{HELPERY}}
+{HELPERY}
 """
 
 
@@ -427,31 +461,65 @@ Zwróć poprawiony, kompletny plik.
 
 
 HELPERY_THEME = """\
-- tytul(t), podtytul(t), body(t), etykieta(t)  -> Text z fontem i kolorem motywu
-- wzor(tex)                                     -> MathTex z polskim TexTemplate
-- licznik(tracker, liczba_cyfr=0, kolor=..., rozmiar=..., sufiks="")
-                                                -> DecimalNumber podpięty pod ValueTracker
-- animuj_liczbe(scene, tracker, do, czas)       -> płynne dobicie licznika
-- pasek_tytulu(t, podtytul_tekst="")            -> tytuł w lewym górnym rogu
-- podkreslenie(mobject, kolor=ACCENT)           -> linia pod obiektem
-- karta(zawartosc, kolor=GRID)                  -> zaokrąglone tło pod obiektem
-- osie(x_range, y_range, **kw)                  -> Axes w kolorach motywu
-- svg(sciezka)                                  -> SVGMobject w kolorach motywu
-- svg_regiony("assets/poland.svg")              -> (SVGMobject, {"mazowieckie": VMobject, ...})
-- pokoloruj_regiony(regiony, {"mazowieckie": 12.3, ...}) -> kolorowanie danymi
-- Kolory: BG, FG, MUTED, GRID, ACCENT, ACCENT_2, ACCENT_3, OK, WARN, PALETA
-- Fonty: FONT_UI, FONT_MONO;  Rozmiary: ROZMIAR_TYTUL, ROZMIAR_PODTYTUL,
-  ROZMIAR_BODY, ROZMIAR_LICZBA
+Tekst:
+- tytul(t)            -> nagłówek fontem nagłówkowym motywu, z trackingiem
+- podtytul(t), body(t), etykieta(t)
+- tag(t)              -> krótki eyebrow tag WERSALIKAMI (jedyne dozwolone miejsce)
+- mono(t)             -> etykieta techniczna monospace
+- wzor(tex)           -> MathTex z polskim TexTemplate (bez polskich słów w środku)
+
+Liczby:
+- licznik(tracker, liczba_cyfr=0, kolor=..., rozmiar=..., sufiks=" tys.")
+                      -> DecimalNumber podpięty pod ValueTracker
+- animuj_liczbe(scene, tracker, do, czas)
+
+Kompozycja:
+- sp(px)              -> odstęp ze skali marki (4/8/12/16/24/32/48/64/96/128).
+                         Inna wartość rzuca wyjątek — nie obchodź tego.
+- pasek_misji(numer, etykieta) -> znacznik sekcji w lewym górnym rogu
+- pasek_tytulu(t, podtytul_tekst="")
+- podkreslenie(mobject), linia(szerokosc)
+- karta(zawartosc, padding=32)  -> zaokrąglone tło (jedyne miejsce na biel)
+- naroza(mobject)     -> narożniki celownika wokół obiektu
+- wejscie(mobject)    -> animacja wejścia w stylistyce motywu (użyj zamiast
+                         własnego FadeIn/Write, wtedy scena działa w każdym motywie)
+- osie(x_range, y_range, **kw)
+
+Assety:
+- svg(sciezka)
+- svg_regiony("assets/poland.svg") -> (SVGMobject, {"mazowieckie": VMobject, ...})
+- pokoloruj_regiony(regiony, {"mazowieckie": 12.3, ...})
+- skala_koloru(wartosc, minimum, maksimum)
+
+Stałe motywu:
+- Kolory: BG, BG_ALT, POWIERZCHNIA, SIATKA, FG, FG_2, MUTED,
+  ACCENT, ACCENT_2, ACCENT_3, OK, WARN, PALETA
+- Fonty: FONT_HEAD, FONT_UI, FONT_MONO
+- Rozmiary: ROZMIAR_TYTUL, ROZMIAR_PODTYTUL, ROZMIAR_BODY, ROZMIAR_ETYKIETA,
+  ROZMIAR_LICZBA
+- STYL: nazwa motywu ("kh" / "misja" / "ciemny")
 - TEX_PL: TexTemplate z T1+lmodern (polskie znaki w LaTeXu)
 """
 
 
-def preview_system(klasa: str) -> str:
-    return PREVIEW_SYSTEM.replace("{KLASA}", klasa).replace("{HELPERY}", HELPERY_THEME)
+def storyboard_system(motyw: str) -> str:
+    return STORYBOARD_SYSTEM.replace("{ZASADY}", zasady_wizualne(motyw))
 
 
-def scene_system(klasa: str) -> str:
-    return SCENE_SYSTEM.replace("{KLASA}", klasa).replace("{HELPERY}", HELPERY_THEME)
+def preview_system(klasa: str, motyw: str) -> str:
+    return (
+        PREVIEW_SYSTEM.replace("{KLASA}", klasa)
+        .replace("{HELPERY}", HELPERY_THEME)
+        .replace("{ZASADY}", zasady_wizualne(motyw))
+    )
+
+
+def scene_system(klasa: str, motyw: str) -> str:
+    return (
+        SCENE_SYSTEM.replace("{KLASA}", klasa)
+        .replace("{HELPERY}", HELPERY_THEME)
+        .replace("{ZASADY}", zasady_wizualne(motyw))
+    )
 
 
 def preview_user(

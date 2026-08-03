@@ -12,7 +12,7 @@ import typer
 from animatrix import __version__, ui
 from animatrix.config import settings
 from animatrix.models import ScriptMeta
-from animatrix.project import Project, ProjectError
+from animatrix.project import DOMYSLNY_MOTYW, Project, ProjectError, dostepne_motywy
 from animatrix.stages import scenes as stage_scenes
 from animatrix.stages import script as stage_script
 from animatrix.stages import storyboard as stage_storyboard
@@ -120,7 +120,7 @@ def _smoke_test() -> int:
     proj = Project(root)
     for d in (proj.scenes_dir, proj.previews_dir, proj.voice_cache_dir):
         d.mkdir(parents=True, exist_ok=True)
-    proj.install_runtime(force=True)
+    proj.install_runtime(DOMYSLNY_MOTYW, force=True)
 
     plik = proj.scenes_dir / "smoke.py"
     plik.write_text(
@@ -152,6 +152,11 @@ def new(
     grupa: Optional[str] = typer.Option(None, "--grupa", help="Grupa docelowa."),
     ton: Optional[str] = typer.Option(None, "--ton"),
     punkty: Optional[str] = typer.Option(None, "--punkty", help="Kluczowe punkty, rozdzielone średnikiem."),
+    motyw: str = typer.Option(
+        DOMYSLNY_MOTYW,
+        "--motyw",
+        help="Stylistyka: kh (korepetytorhamera.pl), misja (briefing), ciemny (neutralna).",
+    ),
 ) -> None:
     """Tworzy nowy projekt i zbiera brief."""
     ui.naglowek("Nowy projekt")
@@ -168,6 +173,7 @@ def new(
         grupa_docelowa=grupa,
         ton=ton,
         kluczowe_punkty=lista_punktow,
+        motyw=motyw,
     )
     try:
         proj = Project.create(nazwa, meta)
@@ -182,6 +188,11 @@ def new(
 @app.command()
 def demo(
     nazwa: str = typer.Argument("demo-chemia", help="Nazwa projektu do utworzenia."),
+    motyw: str = typer.Option(
+        DOMYSLNY_MOTYW,
+        "--motyw",
+        help="Stylistyka: kh (korepetytorhamera.pl), misja (briefing), ciemny (neutralna).",
+    ),
 ) -> None:
     """Tworzy gotowy projekt przykładowy (bez wywołań do modelu i do ElevenLabs)."""
     zrodlo = Path(__file__).resolve().parent / "demo"
@@ -189,7 +200,9 @@ def demo(
         ui.blad(f"Brak plików demo w {zrodlo}.")
         raise typer.Exit(1)
 
-    meta = ScriptMeta(temat="Duży rocznik a matura z chemii (projekt demonstracyjny)")
+    meta = ScriptMeta(
+        temat="Duży rocznik a matura z chemii (projekt demonstracyjny)", motyw=motyw
+    )
     try:
         proj = Project.create(nazwa, meta)
     except ProjectError as exc:
@@ -341,11 +354,20 @@ def projects() -> None:
 @app.command("sync-runtime")
 def sync_runtime(
     nazwa: str = NAZWA,
-    force: bool = typer.Option(False, "--force", help="Nadpisz theme.py i voice.py wersjami z narzędzia."),
+    motyw: Optional[str] = typer.Option(None, "--motyw", help="Zmień stylistykę projektu."),
+    force: bool = typer.Option(False, "--force", help="Nadpisz theme.py, voice.py i motyw.py."),
 ) -> None:
-    """Aktualizuje theme.py / voice.py w projekcie po aktualizacji narzędzia."""
+    """Aktualizuje theme.py / voice.py / motyw.py po aktualizacji narzędzia lub zmianie stylistyki."""
     proj = _otworz(nazwa)
-    zapisane = proj.install_runtime(force=force)
+    skrypt = proj.load_script()
+    if motyw and motyw != skrypt.meta.motyw:
+        if motyw not in dostepne_motywy():
+            ui.blad(f"Nie znam motywu '{motyw}'. Dostępne: {', '.join(dostepne_motywy())}")
+            raise typer.Exit(1)
+        skrypt.meta.motyw = motyw
+        proj.save_script(skrypt)
+        force = True
+    zapisane = _obsluz(proj.install_runtime, skrypt.meta.motyw, force=force)
     if zapisane:
         ui.ok("Zaktualizowano: " + ", ".join(zapisane))
     else:

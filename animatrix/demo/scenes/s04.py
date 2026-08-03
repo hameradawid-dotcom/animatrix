@@ -9,18 +9,19 @@ NARRACJA = (
 
 SZEROKOSC_SLUPKA = 0.9
 ODSTEP = 0.45
-SKALA_Y = 0.075
+SKALA_Y = 0.078
 
 
 class Scena_S04(VoiceoverScene):
     def construct(self):
         self.set_speech_service(speech_service(), create_subcaption=False)
 
-        chip = karta(etykieta(f"chemia rozszerzona: {UDZIAL_CHEMII_PROC}% rocznika"))
-        chip.to_edge(UP, buff=0.6)
+        pasek = pasek_misji(4, "Trend")
+        chip = karta(etykieta(f"chemia rozszerzona: {UDZIAL_CHEMII_PROC}% rocznika"), padding=24)
+        chip.to_edge(UP, buff=sp(48)).to_edge(RIGHT, buff=sp(64))
 
-        podstawa = Line(LEFT * 5.5, RIGHT * 5.5, color=MUTED, stroke_width=2)
-        podstawa.shift(DOWN * 2.6)
+        podstawa = Line(LEFT * 5.0, RIGHT * 5.0, color=SIATKA, stroke_width=2)
+        podstawa.shift(DOWN * 2.2)
 
         slupki = VGroup()
         etykiety = VGroup()
@@ -29,39 +30,35 @@ class Scena_S04(VoiceoverScene):
         start_x = -szerokosc_calkowita / 2 + SZEROKOSC_SLUPKA / 2
 
         for i, (rok, procent) in enumerate(ZDAWALNOSC):
-            wysokosc = procent * SKALA_Y
             kolor = WARN if i == len(ZDAWALNOSC) - 1 else ACCENT
             slupek = Rectangle(
                 width=SZEROKOSC_SLUPKA,
-                height=wysokosc,
+                height=procent * SKALA_Y,
                 fill_color=kolor,
                 fill_opacity=1.0,
                 stroke_width=0,
             )
-            slupek.move_to(podstawa.get_left() + RIGHT * 0)
             slupek.align_to(podstawa, DOWN)
             slupek.set_x(start_x + i * (SZEROKOSC_SLUPKA + ODSTEP))
             slupki.add(slupek)
 
-            rok_txt = etykieta(str(rok))
-            rok_txt.next_to(slupek, DOWN, buff=0.22)
+            rok_txt = mono(str(rok))
+            rok_txt.next_to(slupek, DOWN, buff=sp(16))
             etykiety.add(rok_txt)
 
-            proc_txt = body(f"{procent}%", font_size=22, color=kolor)
-            proc_txt.next_to(slupek, UP, buff=0.18)
+            proc_txt = body(f"{procent}%", color=kolor)
+            proc_txt.next_to(slupek, UP, buff=sp(12))
             wartosci.add(proc_txt)
 
         with self.voiceover(text=NARRACJA) as tracker:
             self.play(
-                FadeIn(chip, shift=DOWN * 0.2),
+                wejscie(pasek),
+                wejscie(chip),
                 Create(podstawa),
                 run_time=tracker.duration * 0.2,
             )
             self.play(
-                LaggedStart(
-                    *[GrowFromEdge(s, DOWN) for s in slupki],
-                    lag_ratio=0.25,
-                ),
+                LaggedStart(*[GrowFromEdge(s, DOWN) for s in slupki], lag_ratio=0.25),
                 run_time=tracker.duration * 0.45,
             )
             self.play(

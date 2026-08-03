@@ -30,6 +30,7 @@ class ScriptMeta(BaseModel):
     grupa_docelowa: str = ""
     ton: str = ""
     kluczowe_punkty: list[str] = Field(default_factory=list)
+    motyw: str = "kh"
 
 
 class Segment(BaseModel):

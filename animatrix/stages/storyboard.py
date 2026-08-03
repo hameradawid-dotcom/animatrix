@@ -35,7 +35,7 @@ def generuj(project: Project, llm: LLM, script: Script) -> Storyboard:
     ui.info("Generuję storyboard dla wszystkich segmentów…")
     with ui.console.status("model dobiera warstwę wizualną…"):
         data = llm.json_call(
-            prompts.STORYBOARD_SYSTEM,
+            prompts.storyboard_system(script.meta.motyw),
             prompts.storyboard_user(
                 temat=script.meta.temat,
                 segmenty=[(s.id, s.narracja) for s in script.segmenty],
@@ -92,7 +92,7 @@ def regeneruj_pozycje(
 
     with ui.console.status("model szuka innego pomysłu…"):
         data = llm.json_call(
-            prompts.STORYBOARD_SYSTEM,
+            prompts.storyboard_system(script.meta.motyw),
             prompts.storyboard_regen_user(
                 temat=script.meta.temat,
                 segment_id=item.id,
@@ -125,7 +125,7 @@ def zbuduj_podglad(
     klasa = klasa_podgladu(item.id)
     plik = project.previews_dir / "_src" / f"{item.id}.py"
 
-    system = prompts.preview_system(klasa)
+    system = prompts.preview_system(klasa, script.meta.motyw)
     user = prompts.preview_user(
         segment_id=item.id,
         klasa=klasa,
