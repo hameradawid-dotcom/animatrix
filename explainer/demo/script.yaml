@@ -1,0 +1,32 @@
+meta:
+  temat: Duży rocznik a matura z chemii (projekt demonstracyjny)
+  jezyk: pl
+  docelowa_dlugosc_s: 30
+  grupa_docelowa: uczniowie liceum przed maturą
+  ton: dynamiczny popularnonaukowy
+  kluczowe_punkty:
+    - liczebność rocznika
+    - rozkład geograficzny
+    - zdawalność chemii rozszerzonej
+    - puenta o wyniku indywidualnym
+segmenty:
+  - id: s01
+    narracja: Ten materiał to przykład działania narzędzia — wszystkie liczby są ilustracyjne.
+    status: approved
+    uwagi: []
+  - id: s02
+    narracja: Weźmy rocznik, w którym do matury podchodzi trzysta tysięcy osób.
+    status: approved
+    uwagi: []
+  - id: s03
+    narracja: 'Rozkładają się nierówno: najwięcej maturzystów mieszka na Mazowszu, Śląsku i w Wielkopolsce.'
+    status: approved
+    uwagi: []
+  - id: s04
+    narracja: Chemię rozszerzoną wybiera co dwunasty z nich, a kiedy rocznik rośnie, średni wynik zwykle lekko spada.
+    status: approved
+    uwagi: []
+  - id: s05
+    narracja: Ale próg na studia liczy się z twojego wyniku, nie z cudzego. Reszta to już czysta chemia.
+    status: approved
+    uwagi: []

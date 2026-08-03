@@ -1,0 +1,13 @@
+manim>=0.19.0
+manim-voiceover[elevenlabs]>=0.3.7
+manim-chemistry>=0.4.4
+anthropic>=0.40
+typer>=0.12
+rich>=13
+pydantic>=2
+pyyaml>=6
+python-dotenv>=1
+
+# Mapy z danymi (opcjonalne — potrzebne tylko dla `explainer assets map-pl`)
+geopandas>=1.0
+shapely>=2.0

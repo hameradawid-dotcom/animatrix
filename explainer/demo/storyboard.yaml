@@ -1,0 +1,79 @@
+segmenty:
+  - id: s01
+    opis_wizualny: Ciemny ekran, tytuł filmu wjeżdża od dołu i podkreśla się linią w kolorze
+      akcentu. Pod spodem pojawia się chip z informacją, że dane są przykładowe. Na koniec
+      w kadrze zostaje tytuł z podkreśleniem i chip.
+    obiekty:
+      - Text — tytuł filmu
+      - Line — podkreślenie w kolorze akcentu
+      - karta() z etykietą "dane przykładowe"
+    animacje:
+      - Write tytułu
+      - Create podkreślenia
+      - FadeIn chipu od dołu
+    assety: []
+    status: approved
+    podglad: null
+    uwagi: []
+  - id: s02
+    opis_wizualny: Na środku kadru duży licznik dobija od zera do trzystu tysięcy, zapisany
+      w tysiącach z sufiksem "tys.". Pod licznikiem podpis "maturzystów w roczniku". Licznik
+      kończy bieg dokładnie z końcem narracji.
+    obiekty:
+      - ValueTracker + DecimalNumber (helper licznik)
+      - Text — podpis pod licznikiem
+    animacje:
+      - FadeIn podpisu
+      - animacja ValueTrackera 0 → 300 z ease_out
+    assety: []
+    status: approved
+    podglad: null
+    uwagi: []
+  - id: s03
+    opis_wizualny: Mapa Polski z podziałem na województwa pojawia się na środku. Województwa
+      kolorują się kolejno wg udziału w roczniku — od tła do akcentu. Trzy największe dostają
+      podpisy. Na końcu w kadrze zostaje pokolorowana mapa z podpisami.
+    obiekty:
+      - SVGMobject — mapa Polski (helper svg_regiony)
+      - podpisy trzech największych województw
+    animacje:
+      - FadeIn mapy
+      - kolorowanie regionów wartościami z dane.py
+      - Write podpisów
+    assety:
+      - assets/poland.svg
+    status: approved
+    podglad: null
+    uwagi: []
+  - id: s04
+    opis_wizualny: Wykres słupkowy zdawalności chemii rozszerzonej w pięciu kolejnych latach.
+      Słupki wyrastają od dołu, ostatni — najniższy — podświetla się kolorem ostrzegawczym.
+      W lewym górnym rogu chip z udziałem wybierających chemię.
+    obiekty:
+      - Axes + słupki (Rectangle)
+      - etykiety lat i wartości procentowych
+      - chip z udziałem chemii
+    animacje:
+      - Create osi
+      - GrowFromEdge słupków
+      - podświetlenie ostatniego słupka
+    assety: []
+    status: approved
+    podglad: null
+    uwagi: []
+  - id: s05
+    opis_wizualny: Cząsteczka etanolu rysuje się na środku kadru, obok niej wzór sumaryczny
+      w LaTeX-u. Na końcu pod cząsteczką pojawia się jednozdaniowa puenta.
+    obiekty:
+      - MMoleculeObject z pliku .mol
+      - MathTex — wzór sumaryczny
+      - Text — puenta
+    animacje:
+      - Create cząsteczki
+      - Write wzoru
+      - FadeIn puenty
+    assety:
+      - assets/etanol.mol
+    status: approved
+    podglad: null
+    uwagi: []

@@ -1,0 +1,22 @@
+{
+  "zrodlo": "/tmp/pl.geojson",
+  "kolumna": "nazwa",
+  "regiony": [
+    "dolnoslaskie",
+    "kujawsko-pomorskie",
+    "lubelskie",
+    "lubuskie",
+    "mazowieckie",
+    "malopolskie",
+    "opolskie",
+    "podkarpackie",
+    "podlaskie",
+    "pomorskie",
+    "warminsko-mazurskie",
+    "wielkopolskie",
+    "zachodniopomorskie",
+    "lodzkie",
+    "slaskie",
+    "swietokrzyskie"
+  ]
+}

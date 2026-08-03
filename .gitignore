@@ -1,0 +1,20 @@
+.env
+.env.*
+!.env.example
+
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Projekty użytkownika są jego, nie narzędzia. Jeśli chcesz wersjonować własny
+# projekt, trzymaj go w osobnym repo albo usuń tę linię i dopisz wyjątki na
+# media/, renders/, previews/, output/ i .cache/ — tam lądują gigabajty.
+projects/
+
+.DS_Store
